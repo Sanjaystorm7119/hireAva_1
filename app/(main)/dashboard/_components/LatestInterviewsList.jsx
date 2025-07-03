@@ -11,20 +11,19 @@ function LatestInterviewsList() {
       <h2 className="font-bold text-2xl mb-2">Previous Interviews</h2>
 
       {interviewList?.length == 0 && (
-        <Link href={"/dashboard/create-interview" } className="p-5 flex flex-col gap-3 items-center  ">
+        <Link
+          href={"/dashboard/create-interview"}
+          className="p-5 flex flex-col gap-3 items-center  "
+        >
           <Video className="text-primary" />
           <h2 className="">No previously created interviews !!</h2>
           <Button className="bg-blue-400">
-            
             <Plus /> Create New Interview
           </Button>
         </Link>
       )}
-      
     </div>
   );
 }
 
-
 export default LatestInterviewsList;
-

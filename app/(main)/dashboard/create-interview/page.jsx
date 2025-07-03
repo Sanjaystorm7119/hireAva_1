@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Progress from "../../../../components/ui/progress";
 import React, { useState, useCallback } from "react";
 import FormContainer from "./_components/FormContainer";
-import QuestionList from "../create-interview/QuestionList";
+import QuestionListComponent from "./_components/QuestionList";
 import { toast } from "sonner";
 
 function CreateInterview() {
@@ -22,9 +22,10 @@ function CreateInterview() {
   }, []); // Empty dependency array as we are using functional update
 
   const onGoToNext = () => {
+    console.log("Current formData:", formData);
     if (
-      formData?.jobPosition ||
-      formData?.jobDescription ||
+      !formData?.jobPosition ||
+      !formData?.jobDescription ||
       !formData?.duration ||
       !formData.type
     ) {
@@ -36,8 +37,8 @@ function CreateInterview() {
   };
 
   return (
-    <div className="mt-5 md:px-10 lg:px-20 xl:px-10 bg-white rounded-2xl py-2.5">
-      <div className="flex gap-2 items-center ">
+    <div className="mt-5 p-2.5 bg-white rounded-2xl py-2.5">
+      <div className="flex gap-2 items-center  ">
         <ArrowLeft onClick={() => router.back()} className="cursor-pointer" />
         <h2 className="font-bold text-2xl">Create new Interview</h2>
       </div>
@@ -49,7 +50,7 @@ function CreateInterview() {
           GoToNext={() => onGoToNext()}
         />
       ) : step === 2 ? (
-        <QuestionList formData={formData} />
+        <QuestionListComponent formData={formData} />
       ) : null}
     </div>
   );

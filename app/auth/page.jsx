@@ -91,9 +91,12 @@ const Navbar = () => {
         </Link>
       ) : (
         <div className="flex gap-5">
-          <button className="transform rounded-lg bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
-            Dashboard
-          </button>
+          <Link href={"./dashboard"}>
+            <button className="transform rounded-lg bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
+              Dashboard
+            </button>
+          </Link>
+
           <UserButton />
         </div>
       )}

@@ -13,7 +13,7 @@ import { InterviewTypes } from "../../../../../services/constants";
 import { Button } from "../../../../../components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-function FormContainer({ onHandleInputChange,GoToNext }) {
+function FormContainer({ onHandleInputChange, GoToNext }) {
   const [interviewType, setInterviewType] = useState([]);
   const [jobPosition, setJobPosition] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -33,7 +33,7 @@ function FormContainer({ onHandleInputChange,GoToNext }) {
     () =>
       createDebounce((value) => {
         if (onHandleInputChange) {
-          onHandleInputChange("jobposition", value);
+          onHandleInputChange("jobPosition", value);
         }
       }, 600),
     [onHandleInputChange, createDebounce]
@@ -43,7 +43,7 @@ function FormContainer({ onHandleInputChange,GoToNext }) {
     () =>
       createDebounce((value) => {
         if (onHandleInputChange) {
-          onHandleInputChange("jobdescription", value);
+          onHandleInputChange("jobDescription", value);
         }
       }, 300),
     [onHandleInputChange, createDebounce]
@@ -119,8 +119,8 @@ function FormContainer({ onHandleInputChange,GoToNext }) {
 
   return (
     <div>
-      <div className="mx-2" >
-        <div >
+      <div className="mx-2">
+        <div>
           <h2 className="text-sm font-medium ">Job Position</h2>
           <Input
             placeholder="e.g. Frontend Developer"

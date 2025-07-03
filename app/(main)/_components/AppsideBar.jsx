@@ -40,10 +40,12 @@ export default function AppSidebar() {
             <h3 className="font-bold">by stelleHire</h3>
           </div>
         </div>
-        <Button className="w-full my-2">
-          <Plus />
-          Create New interview
-        </Button>
+        <Link href={"/dashboard/create-interview"}>
+          <Button className="w-full my-2">
+            <Plus />
+            Create New interview
+          </Button>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>

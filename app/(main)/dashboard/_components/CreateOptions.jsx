@@ -17,7 +17,7 @@ function CreateOptions() {
           className="p-3 text-primary bg-blue-50 rounded-lg"
         />
         <h2 className="font-bold ">Create New interview</h2>
-        <p className="text-gray-500">Get Hired from Home through AI</p>
+        <p className="text-gray-500">Get Hired from ANYWHERE through AI</p>
       </Link>
       <div className="bg-white border border-gray-200 rounded-r-lg rounded-ss-lg p-5">
         <PhoneCall
