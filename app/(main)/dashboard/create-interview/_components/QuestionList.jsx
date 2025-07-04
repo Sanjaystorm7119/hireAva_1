@@ -8,7 +8,7 @@ import { supabase } from "../../../../../lib/supabase";
 import { useUser } from "@clerk/nextjs";
 import { v4 as uuidv4 } from "uuid";
 
-function QuestionList({ formData }) {
+function QuestionList({ formData, onCreateInterviewLink }) {
   const [loading, setLoading] = useState(false);
   const [questionList, setQuestionList] = useState();
   const hasCalledAPI = useRef(false);
@@ -56,6 +56,8 @@ function QuestionList({ formData }) {
       .select();
     setSaveLoading(false);
     // console.log(data);
+
+    onCreateInterviewLink(interviewId);
   };
 
   return (
@@ -86,7 +88,7 @@ function QuestionList({ formData }) {
       <div className="flex justify-end mt-2">
         <Button onClick={() => onFinish()} disabled={saveLoading}>
           {saveLoading && <Loader2Icon className="animate-spin" />}
-          Finish
+          Create Interview Link
         </Button>
       </div>
     </div>
