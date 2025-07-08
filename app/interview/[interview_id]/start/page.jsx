@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect, useState, useMemo, useRef } from "react";
 import { InterviewDataContext } from "../../../../context/InterviewDataContext";
-import { Mic, Phone, PhoneCall, Timer } from "lucide-react";
+import { Mic, MicOff, Phone, PhoneCall, Timer } from "lucide-react";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { IconPhoneEnd } from "@tabler/icons-react";
@@ -20,6 +20,7 @@ function StartInterview() {
   const [activeUser, setActiveUser] = useState(false);
   const [conversation, setConversation] = useState();
   const [loading, setLoading] = useState(false);
+  const [isMicMuted, setIsMicMuted] = useState(false);
   const router = useRouter();
 
   const { interview_id } = useParams();
@@ -288,6 +289,28 @@ function StartInterview() {
     }
   };
 
+  const toggleMicrophone = () => {
+    if (!callStarted) {
+      toast.error("Please start the interview first");
+      return;
+    }
+
+    try {
+      if (isMicMuted) {
+        vapi.setMuted(false);
+        setIsMicMuted(false);
+        toast.success("Microphone unmuted");
+      } else {
+        vapi.setMuted(true);
+        setIsMicMuted(true);
+        toast.success("Microphone muted");
+      }
+    } catch (err) {
+      console.error("Failed to toggle microphone:", err);
+      toast.error("Failed to toggle microphone");
+    }
+  };
+
   return (
     <div className="p-10 lg:px-48 xl:px-56 ">
       <h2 className="font-bold text-xl flex justify-between ">
@@ -316,10 +339,17 @@ function StartInterview() {
 
         <div className="bg-white h-[400px] rounded-4xl border flex flex-col items-center justify-center">
           <div className="relative">
-            {activeUser && (
+            {activeUser && !isMicMuted && (
               <span className="absolute inset-0 rounded-full bg-blue-400 opacity-75 animate-ping"></span>
             )}
-            <h2 className="bg-blue-300 text-gray-800 p-4 rounded-full">
+            {isMicMuted && (
+              <span className="absolute inset-0 rounded-full bg-red-400 opacity-75 animate-ping"></span>
+            )}
+            <h2
+              className={`p-4 rounded-full ${
+                isMicMuted ? "bg-red-300" : "bg-blue-300"
+              } text-gray-800`}
+            >
               {user?.firstName?.[0]?.toUpperCase()}
             </h2>
             <h2 className=" text-gray-800 rounded-full">
@@ -327,12 +357,31 @@ function StartInterview() {
                 ? user.firstName[0].toUpperCase() + user.firstName.slice(1)
                 : ""}
             </h2>
+            {isMicMuted && (
+              <div className="mt-2 text-red-500 text-sm font-medium">
+                Microphone Muted
+              </div>
+            )}
           </div>
         </div>
       </div>
       {!loading && (
         <div className="flex justify-center items-center gap-4 mt-4">
-          <Mic className="h-12 w-12 p-2  bg-gray-500 text-white rounded-full cursor-pointer" />
+          <button
+            onClick={toggleMicrophone}
+            className={`h-12 w-12 p-2 rounded-full cursor-pointer transition-colors ${
+              isMicMuted
+                ? "bg-red-500 hover:bg-red-600 text-white"
+                : "bg-gray-500 hover:bg-gray-600 text-white"
+            }`}
+            title={isMicMuted ? "Unmute microphone" : "Mute microphone"}
+          >
+            {isMicMuted ? (
+              <MicOff className="h-8 w-8" />
+            ) : (
+              <Mic className="h-8 w-8" />
+            )}
+          </button>
           <AlertConfirmation stopInterview={() => stopInterview()}>
             <IconPhoneEnd className="h-12 w-12 p-1  bg-red-400 text-white rounded-full cursor-pointer" />
           </AlertConfirmation>
@@ -342,7 +391,9 @@ function StartInterview() {
         {loading
           ? "Generating feedback..."
           : callStarted
-          ? "Interview in progress ..."
+          ? isMicMuted
+            ? "Interview in progress (Microphone muted)"
+            : "Interview in progress ..."
           : "Interview ready to start"}
       </h2>
     </div>
