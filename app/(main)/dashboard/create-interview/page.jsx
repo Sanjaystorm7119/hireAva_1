@@ -7,11 +7,13 @@ import FormContainer from "./_components/FormContainer";
 import QuestionListComponent from "./_components/QuestionList";
 import { toast } from "sonner";
 import InterviewLink from "./_components/InterviewLink";
+import { useUser } from "@clerk/nextjs";
 function CreateInterview() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [interview_Id, setInterview_Id] = useState();
+  const { user } = useUser();
 
   // CRITICAL : Memoize function to prevent infinite re-renders
   const onHandleInputChange = useCallback((field, value) => {
@@ -23,7 +25,11 @@ function CreateInterview() {
   }, []); // Empty dependency array as we are using functional update
 
   const onGoToNext = () => {
-    console.log("Current formData:", formData);
+    if (user.credits <= 0) {
+      toast("add credits , please contact admin");
+      return;
+    }
+    if (user) console.log("Current formData:", formData);
     if (
       !formData?.jobPosition ||
       !formData?.jobDescription ||

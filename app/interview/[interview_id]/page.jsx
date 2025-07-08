@@ -104,7 +104,7 @@ function Interview() {
           width={100}
           height={100}
           className="h-[50px] w-[50px]"
-          src={"../Ava_icon_32.svg"}
+          src={"./Ava_icon_32.svg"}
           alt="Ava_icon_32"
         />
         <h2 className="font-bold text-xl m-2">{interviewData?.jobPosition}</h2>

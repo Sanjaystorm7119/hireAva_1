@@ -18,7 +18,7 @@ export async function POST(req) {
     // model: "google/gemini-2.0-flash-exp:free",
     // model: "deepseek/deepseek-r1-0528:free",
     model: "openrouter/cypher-alpha:free",
-    messages: [{ role: "system", content: FINAL_PROMPT }],
+    messages: [{ role: "user", content: FINAL_PROMPT }],
   });
 
   if (!completion?.choices?.[0]?.message) {

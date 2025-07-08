@@ -4,11 +4,16 @@ import { UserButton } from "@clerk/nextjs";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import Hero1 from "../auth/Hero1";
+import Footer from "../auth/Footer";
 
+import "./Hero1.css";
 const Login = () => {
   return (
-    <div className="relative mx-auto  flex max-w-7xl flex-col items-center justify-center">
+    <div className="relative  flex max-w-7xl flex-col ">
       <Navbar />
+      <Hero1 />
+
       <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
         <div className="absolute top-0 h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
       </div>
@@ -51,7 +56,7 @@ const Login = () => {
         >
           With AI, you can now interview anytime anywhere
         </motion.p>
-        <Link href={"./sign-in"}>
+        <Link href={"/dashboard"}>
           <motion.div
             initial={{
               opacity: 0,
@@ -71,6 +76,7 @@ const Login = () => {
           </motion.div>
         </Link>
       </div>
+      <Footer />
     </div>
   );
 };

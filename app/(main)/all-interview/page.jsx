@@ -1,12 +1,14 @@
 "use client";
+// import React from "react";
 import { Plus, Video } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Button } from "../../../../components/ui/button";
+import { Button } from "../../../components/ui/button";
 import Link from "next/link";
-import { supabase } from "../../../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 import { useUser } from "@clerk/nextjs";
-import InterviewCard from "./InterviewCard";
-function LatestInterviewsList() {
+import InterviewCard from "../../(main)/dashboard/_components/InterviewCard";
+
+function AllInterviews() {
   const [interviewList, setInterviewList] = useState([]);
   const { user } = useUser();
 
@@ -19,15 +21,15 @@ function LatestInterviewsList() {
       .from("interviews")
       .select("*")
       .eq("userEmail", user.emailAddresses[0]?.emailAddress)
-      .order("id", { ascending: false })
-      .limit(6);
+      .order("id", { ascending: false });
+
     console.log(interviews);
     setInterviewList(interviews);
   };
 
   return (
     <div className="my-5 ">
-      <h2 className="font-bold text-2xl mb-2">Previous Interviews</h2>
+      <h2 className="font-bold text-2xl mb-2">All Interviews</h2>
       {interviewList?.length == 0 && (
         <Link
           href={"/dashboard/create-interview"}
@@ -53,4 +55,4 @@ function LatestInterviewsList() {
   );
 }
 
-export default LatestInterviewsList;
+export default AllInterviews;

@@ -1,35 +1,30 @@
 import {
-  Box,
   BriefcaseBusiness,
   Calendar,
   Code2Icon,
   Component,
   LayoutDashboard,
   List,
-  PersonStanding,
   Puzzle,
   Settings,
-  Square,
-  SquareArrowOutUpRight,
-  User2,
   User2Icon,
 } from "lucide-react";
 
 export const SidebarOptions = [
   {
-    name: "DashBaord",
+    name: "DashBoard",
     icon: LayoutDashboard,
     path: "/dashboard",
   },
   {
     name: "Scheduled Interview",
     icon: Calendar,
-    path: "/scheduledinterview",
+    path: "/scheduled-interview",
   },
   {
     name: "All Interviews",
     icon: List,
-    path: "/allinterviews",
+    path: "/all-interview",
   },
   {
     name: "Settings",
@@ -40,7 +35,7 @@ export const SidebarOptions = [
 
 export const InterviewTypes = [
   {
-    title: "technical",
+    title: "Technical",
     icons: Code2Icon,
   },
   {
@@ -197,6 +192,8 @@ ${{ questionsList }}
 > **Never respond with the same clarification prompt every time.**
 > Instead, **customize your reply** based on the conversation's flow, candidate's tone, and how they interacted previously. Avoid sounding scripted or robotic.
 > **Never deviate from the topic and do not give answers to interview question , instead politely say that you are the interviewer and can not answer
+> **Do not over clarify or repeat the interviewer's answers.
+> **Do not answer to anything off topic apart from the interview
 ---
 
 ### 5. **Off-Topic Answers**
@@ -483,24 +480,14 @@ ${{ questionsList }}
 > Communication was clear, though slightly informal at times. With a bit more depth in advanced concepts, the candidate could perform well in mid-level frontend roles.
 > Strong points included context usage and avoiding prop drilling. Should practice more with lifecycle behavior and performance optimization.
 
----
-
-#### **Final Verdict (For Mock/Training Use Only)**
-
-> * [ ] Recommend for real-world interview
-> * [ ] Needs more prep
-> * [ ] Strong foundational skills—ready for next level
-> * [ ] Showed promise—follow up in 2 weeks
-> * [ ] Did not meet expected level
-
-> **Important:** This section is **not shown to the candidate**. Use it for self-evaluation, coaching, or feedback loops if needed.
-> **Important:** Provide the feedback in the json format at the end.
 `;
 
 export const FEEDBACK = `{{conversation}}
+##If the conversation ends before 60 seconds, generate a report saying , no enough information and give rating as 1 in all fields and justify it
 #Depending upon this interview Conversation between assistant and user, generate a feedback for user interview.
 **Generate ratings out of 10 for technical skills , communication skills, problem solving skills and communication skills.
 *Also provide a 3 line summary , in bulleted points about the interview and one line to let me know whether the candidate is recommended or not for hiring with message.
+##give low rating if the candidate did not speak enough or gave irrelevant answers
 #Result
 **Generate the response in JSON format like the example below:
 {
@@ -509,7 +496,8 @@ rating:{
 techincalSkills:5,
 communicationSkills:7,
 problemSolving:7,
-experience:6
+experience:6,
+OverallRating:6.5
     },
     summary: <in 3 lines>,
     Recommendation:"",

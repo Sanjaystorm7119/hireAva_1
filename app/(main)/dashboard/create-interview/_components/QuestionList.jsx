@@ -56,7 +56,14 @@ function QuestionList({ formData, onCreateInterviewLink }) {
       .select();
     setSaveLoading(false);
     // console.log(data);
+    //update credits
 
+    const userUpdate = await supabase
+      .from("Users")
+      .update({ credits: Number(user.Credits) - 1 })
+      .eq("email", user?.userEmail)
+      .select();
+    console.log(userUpdate);
     onCreateInterviewLink(interviewId);
   };
 
@@ -68,7 +75,7 @@ function QuestionList({ formData, onCreateInterviewLink }) {
           <div>
             <h2 className="font-medium">Preparing your interview</h2>
             <p className="text-primary font-medium  ">
-              Ava is crafting personalised questions based on your
+              Ava is crafting personalised questions based on given
               jobDescription and position
             </p>
           </div>
