@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
-import { Clock, Info, Loader, Video } from "lucide-react";
+import { Clock, Info, Loader, Video, CheckCircle } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
@@ -9,6 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { InterviewDataContext } from "../../../context/InterviewDataContext";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 function Interview() {
   const { interview_id } = useParams();
@@ -83,62 +84,183 @@ function Interview() {
     }
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4 },
+    },
+  };
+
+  const pulseVariants = {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  };
+
   // Show loading state while data is being fetched
   if (loading || !isLoaded) {
     return (
-      <div className="px-10 md:px-28 lg:px-48 xl:px-64 flex justify-center items-center min-h-screen">
-        <div className="text-center animate-pulse">
-          <Loader className="animate-spin" />
-        </div>
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader className="h-8 w-8 text-blue-600 mx-auto mb-4" />
+          </motion.div>
+          <p className="text-gray-600 font-medium">
+            Loading interview details...
+          </p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="px-10 md:px-28 lg:px-48 xl:px-64 ">
-      <div
-        className="flex flex-col justify-center items-center 
-      border rounded-xl bg-white p-7 sm:px-10 md:px-16 lg:px-20 xl:px-30"
-      >
-        <Image
-          width={100}
-          height={100}
-          className="h-[50px] w-[50px]"
-          src={"./Ava_icon_32.svg"}
-          alt="Ava_icon_32"
-        />
-        <h2 className="font-bold text-xl m-2">{interviewData?.jobPosition}</h2>
-        <h2 className="flex gap-2 items-center text-gray-500 mt-3">
-          <Clock className="h-4 w-4 " />
-          {interviewData?.duration} Minutes
-        </h2>
-
-        {/* Display user info instead of input */}
-        <div className="w-full p-3">
-          <h2 className="font-semibold">Interview Candidate</h2>
-          <div className="my-2 p-3 bg-gray-50 rounded-lg">
-            <p className="font-medium">{userData?.firstname}</p>
-            <p className="text-sm text-gray-600">{userData?.email}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col bg-blue-200 p-7 rounded-xl">
-          <h2 className="flex gap-3 font-bold">
-            <Info />
-            Before you Begin
-          </h2>
-          <ul>
-            <li> - Test Your Camera and Microphone </li>
-            <li> - Ensure stable Internet Connection</li>
-            <li> - Find a Quiet place for interview</li>
-          </ul>
-        </div>
-        <Button
-          onClick={() => onJoinInterview()}
-          className="mt-5 w-full font-bold"
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <Video /> Join Interview
-        </Button>
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+            <motion.div className="text-center" variants={itemVariants}>
+              <motion.div
+                className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4"
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Image
+                  width={40}
+                  height={40}
+                  className="h-10 w-10"
+                  src="./Ava_icon_32.svg"
+                  alt="Ava_icon_32"
+                />
+              </motion.div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                {interviewData?.jobPosition}
+              </h1>
+              <div className="flex items-center justify-center gap-2 text-blue-100">
+                <Clock className="h-5 w-5" />
+                <span className="text-lg font-medium">
+                  {interviewData?.duration} Minutes
+                </span>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Content Section */}
+          <div className="p-6 md:p-8 lg:p-10 space-y-8">
+            {/* Candidate Information */}
+            <motion.div variants={itemVariants}>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                Interview Candidate
+              </h2>
+              <motion.div
+                className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">
+                      {userData?.firstname?.charAt(0)?.toUpperCase() || "U"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 text-lg">
+                      {userData?.firstname}
+                    </p>
+                    <p className="text-gray-600">{userData?.email}</p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Pre-Interview Guidelines */}
+            <motion.div variants={itemVariants}>
+              <motion.div
+                className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200"
+                whileHover={{ scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <h2 className="flex items-center gap-3 font-bold text-blue-800 text-lg mb-4">
+                  <Info className="h-6 w-6" />
+                  Before you Begin
+                </h2>
+                <div className="space-y-3">
+                  {[
+                    { icon: "🎤", text: "Test Your Microphone" },
+                    { icon: "🌐", text: "Ensure stable Internet Connection" },
+                    { icon: "🔇", text: "Find a Quiet place for interview" },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center gap-3 text-gray-700"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 + 0.3 }}
+                    >
+                      <span className="text-xl">{item.icon}</span>
+                      <span className="font-medium">{item.text}</span>
+                      <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Join Interview Button */}
+            <motion.div variants={itemVariants} className="pt-4">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                animate={pulseVariants}
+              >
+                <Button
+                  onClick={() => onJoinInterview()}
+                  className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Video className="h-5 w-5" />
+                  )}
+                  {loading ? "Joining..." : "Join Interview"}
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
