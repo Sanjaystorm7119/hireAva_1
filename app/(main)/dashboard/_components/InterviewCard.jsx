@@ -99,7 +99,7 @@ function InterviewCard({ interview, viewDetail = false }) {
           ) : (
             <Link
               href={
-                "/scheduled-interview/" + interview?.interviewId + "/detail"
+                "/scheduled-interview/" + interview?.interviewId + "/details"
               }
             >
               <Button className='mt-5 w-full variant="outline"'>
