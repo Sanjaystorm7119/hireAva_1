@@ -35,7 +35,7 @@ function InterviewDetails() {
       .eq("userEmail", user.emailAddresses[0]?.emailAddress)
       .eq("interviewId", interview_id);
 
-    console.log(result[0]);
+    // console.log(result[0]);
     setInterviewDetail(result[0] || null);
   };
 

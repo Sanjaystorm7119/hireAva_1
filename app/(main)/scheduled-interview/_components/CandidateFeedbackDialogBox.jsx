@@ -106,7 +106,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                   <div className="mt-5">
                     <h2 className="font-bold">Performance Summary</h2>
                     <ul style={{ listStyleType: "disc", paddingLeft: "20px" }}>
-                      {feedback?.summary?.map((summary, index) => (
+                      {feedback?.feedback?.summary?.map((summary, index) => (
                         <li key={index}>
                           <p>{summary}</p>
                         </li>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect, useState, useMemo, useRef } from "react";
 import { InterviewDataContext } from "../../../../context/InterviewDataContext";
-import { Mic, MicOff, Phone, PhoneCall, Timer } from "lucide-react";
+import { Mic, MicOff, Timer } from "lucide-react";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { IconPhoneEnd } from "@tabler/icons-react";
@@ -136,7 +136,7 @@ function StartInterview() {
         }
       );
 
-      // console.log("Feedback API response:", result?.data);
+      console.log("Feedback API response:", result?.data);
 
       const Content = result.data.content;
       const final_content = Content.replace("```json", "").replace("```", "");
@@ -161,7 +161,7 @@ function StartInterview() {
           },
         ])
         .select();
-      console.log(data);
+      // console.log(data);
       router.replace("/interview/" + interview_id + "/completed");
     } catch (error) {
       console.error("Error generating feedback:", error);

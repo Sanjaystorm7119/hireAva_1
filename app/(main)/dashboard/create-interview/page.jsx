@@ -29,7 +29,7 @@ function CreateInterview() {
       toast("add credits , please contact admin");
       return;
     }
-    // if (user) console.log("Current formData:", formData);
+    if (user) console.log("Current formData:", formData);
     if (
       !formData?.jobPosition ||
       !formData?.jobDescription ||
