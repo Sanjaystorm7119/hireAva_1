@@ -1,26 +1,66 @@
-import { currentUser } from "@clerk/nextjs/dist/types/server";
-import { NextApiRequest } from "next";
-// import { createClient } from "@supabase/supabase-js";
+import { currentUser } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { supabase } from '../../../lib/supabase';
 
-import {supabase} from '../../../lib/supabase'
-import { NextResponse } from "next/server";
+export async function POST(request: NextRequest) {
+    try {
+        const user = await currentUser();
+        
+        if (!user?.primaryEmailAddress?.emailAddress) {
+            return NextResponse.json(
+                { error: "No user email found" }, 
+                { status: 401 }
+            );
+        }
 
-export async function POST(params:NextApiRequest) {
-    
-    const user = await currentUser();
+        // Check if user already exists
+        const { data: users, error } = await supabase
+            .from('Users')
+            .select('*')
+            .eq('email', user.primaryEmailAddress.emailAddress);
 
-    //if already exist else create
-    try{
-    const { data: users, error } = await supabase
-  .from('Users')
-  .select('*')
-  .eq('email', user?.primaryEmailAddress?.emailAddress);
-  if(users?.length==0){
+        if (error) {
+            console.error('Supabase error:', error);
+            return NextResponse.json(
+                { error: "Database error" }, 
+                { status: 500 }
+            );
+        }
 
-  }
-  return NextResponse.json(users[0])
-    }
-    catch(e){
+        // If user doesn't exist, create new user
+        if (users && users.length === 0) {
+            const { data: newUser, error: insertError } = await supabase
+                .from('Users')
+                .insert([
+                    {
+                        email: user.primaryEmailAddress.emailAddress,
+                        // Add other user fields as needed
+                        // name: user.firstName + ' ' + user.lastName,
+                        // clerk_id: user.id,
+                    }
+                ])
+                .select()
+                .single();
 
+            if (insertError) {
+                console.error('Insert error:', insertError);
+                return NextResponse.json(
+                    { error: "Failed to create user" }, 
+                    { status: 500 }
+                );
+            }
+
+            return NextResponse.json(newUser);
+        }
+
+        // Return existing user
+        return NextResponse.json(users[0]);
+        
+    } catch (error) {
+        console.error('API error:', error);
+        return NextResponse.json(
+            { error: "Internal server error" }, 
+            { status: 500 }
+        );
     }
 }
