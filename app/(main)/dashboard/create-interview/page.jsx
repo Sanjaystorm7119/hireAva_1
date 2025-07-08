@@ -19,7 +19,7 @@ function CreateInterview() {
   const onHandleInputChange = useCallback((field, value) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
-      console.log("Updated form data:", newData); //  console.log to show current data
+      // console.log("Updated form data:", newData); //  console.log to show current data
       return newData;
     });
   }, []); // Empty dependency array as we are using functional update
@@ -29,7 +29,7 @@ function CreateInterview() {
       toast("add credits , please contact admin");
       return;
     }
-    if (user) console.log("Current formData:", formData);
+    // if (user) console.log("Current formData:", formData);
     if (
       !formData?.jobPosition ||
       !formData?.jobDescription ||

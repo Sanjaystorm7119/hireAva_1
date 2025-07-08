@@ -46,7 +46,7 @@ function ScheduledInterview() {
         return;
       }
 
-      console.log("Data:", data);
+      // console.log("Data:", data);
       setInterviewList(data || []);
     } catch (err) {
       console.error("Error fetching interviews:", err);

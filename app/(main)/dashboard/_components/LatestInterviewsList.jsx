@@ -23,7 +23,7 @@ function LatestInterviewsList() {
       .eq("userEmail", user.emailAddresses[0]?.emailAddress)
       .order("id", { ascending: false })
       .limit(6);
-    console.log(interviews);
+    // console.log(interviews);
     setInterviewList(interviews);
   };
 

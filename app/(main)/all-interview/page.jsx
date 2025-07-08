@@ -24,7 +24,7 @@ function AllInterviews() {
       .eq("userEmail", user.emailAddresses[0]?.emailAddress)
       .order("id", { ascending: false });
 
-    console.log(interviews);
+    // console.log(interviews);
     setInterviewList(interviews);
   };
 
