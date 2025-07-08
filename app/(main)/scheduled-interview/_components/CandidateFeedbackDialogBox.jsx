@@ -59,9 +59,10 @@ function CandidateFeedbackDialogBox({ candidate }) {
                         className={`text-lg font-semibold ${
                           feedback?.rating?.OverallRating < 5
                             ? "text-red-600"
-                            : feedback?.rating?.OverallRating === 5
-                            ? "text-gray-600"
-                            : "text-green-600"
+                            : feedback?.rating?.OverallRating > 5 &&
+                              feedback?.rating?.OverallRating <= 10
+                            ? "text-green-600"
+                            : "text-gray-600"
                         }`}
                       >
                         {feedback?.rating?.OverallRating}/10
@@ -106,7 +107,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                   <div className="mt-5">
                     <h2 className="font-bold">Performance Summary</h2>
                     <ul style={{ listStyleType: "disc", paddingLeft: "20px" }}>
-                      {feedback?.feedback?.summary?.map((summary, index) => (
+                      {feedback?.summary?.map((summary, index) => (
                         <li key={index}>
                           <p>{summary}</p>
                         </li>
