@@ -7,6 +7,7 @@ import {
   List,
   Puzzle,
   Settings,
+  User,
   User2Icon,
 } from "lucide-react";
 
@@ -52,7 +53,7 @@ export const InterviewTypes = [
   },
   {
     title: "Leadership",
-    icons: Component,
+    icons: User,
   },
 ];
 

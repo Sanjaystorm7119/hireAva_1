@@ -12,23 +12,6 @@ import Progress from "../../../../components/ui/progress";
 
 function CandidateFeedbackDialogBox({ candidate }) {
   const feedback = candidate?.feedback?.feedback;
-
-  // Helper function to determine if recommendation is negative
-  const isNotRecommended = (recommendation) => {
-    if (!recommendation) return false;
-    const lowerRecommendation = recommendation.toLowerCase().trim();
-    return (
-      lowerRecommendation.includes("not recommended") ||
-      lowerRecommendation.includes("not suitable") ||
-      lowerRecommendation.includes("rejected") ||
-      lowerRecommendation === "no"
-    );
-  };
-
-  const recommendationBgColor = isNotRecommended(feedback?.Recommendation)
-    ? "bg-red-200"
-    : "bg-green-200";
-
   return (
     <div>
       <Dialog>
@@ -58,6 +41,9 @@ function CandidateFeedbackDialogBox({ candidate }) {
                     <div>
                       <h3 className="font-medium text-foreground">
                         {candidate.userName}
+                      </h3>
+                      <h3 className="font-medium text-foreground">
+                        {candidate.userEmail}
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         Completed on:{" "}
@@ -91,7 +77,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                   <h2 className="m-2 font-bold">Skills Assessment</h2>
                   <div className="mt-2 grid grid-cols-2 gap-4">
                     <h2 className="flex justify-between items-center gap-5 ">
-                      Technical Skills{" "}
+                      Technical Skils{" "}
                       <Progress
                         value={feedback?.rating?.technicalSkills * 10}
                       />{" "}
@@ -99,7 +85,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                     </h2>
                     {/* <hr></hr> */}
                     <h2 className="flex justify-between items-center gap-5">
-                      Communication Skills{" "}
+                      Communication Skils{" "}
                       <Progress
                         value={feedback?.rating?.communicationSkills * 10}
                       />{" "}
@@ -107,7 +93,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                     </h2>
                     {/* <hr></hr> */}
                     <h2 className="flex justify-between items-center gap-5">
-                      Problem Solving Skills{" "}
+                      Problem Solving Skils{" "}
                       <Progress value={feedback?.rating?.problemSolving * 10} />{" "}
                       <span>{feedback?.rating?.problemSolving}/10</span>
                     </h2>
@@ -128,7 +114,12 @@ function CandidateFeedbackDialogBox({ candidate }) {
                     </ul>
                   </div>
                   <div
-                    className={`m-2 p-5 rounded-md ${recommendationBgColor}`}
+                    className={`m-2 p-5 rounded-md ${
+                      feedback?.Recommendation?.trim().toLowerCase() ===
+                      "not recommended"
+                        ? "bg-red-200"
+                        : "bg-green-200"
+                    }`}
                   >
                     <h2 className="font-extrabold">
                       Recommendation message :{" "}
@@ -137,7 +128,12 @@ function CandidateFeedbackDialogBox({ candidate }) {
                     <h2>{feedback?.RecommendationMessage}</h2>
                   </div>
                   <div
-                    className={`m-2 p-5 rounded-md ${recommendationBgColor}`}
+                    className={`m-2 p-5 rounded-md ${
+                      feedback?.Recommendation?.trim().toLowerCase() ===
+                      "not recommended"
+                        ? "bg-red-200"
+                        : "bg-green-200"
+                    }`}
                   >
                     <h2 className="font-extrabold">Verdict : </h2>
                     <br></br>
