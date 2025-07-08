@@ -12,7 +12,7 @@ import { Input } from "../../../../../components/ui/input";
 import { Button } from "../../../../../components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
-function InterviewLink({interviewId, formData}) {
+function InterviewLink({ interviewId, formData }) {
   const url = `${process.env.NEXT_PUBLIC_HOST_URL}/${interviewId}`;
 
   const GetInterviewURL = () => {
