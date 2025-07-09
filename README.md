@@ -57,7 +57,7 @@ You can deploy this app to Vercel, Netlify, or any platform that supports Next.j
 ## License
 
 This project is licensed under the MIT License.
-
+```
 ha/
 ├── @/
 │ └── components/
@@ -188,3 +188,4 @@ ha/
 ├── services/
   ├── constants.jsx
   └── supabaseClient.jsx
+```
