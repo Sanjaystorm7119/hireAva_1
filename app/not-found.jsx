@@ -72,7 +72,7 @@ export default function NotFound() {
             Still can't find what you're looking for?
           </h3>
           <p className="text-gray-600 mb-4">
-            Our support team is here to help you navigate HireAva and find
+            Our support team is here to help you navigate HireEva and find
             exactly what you need.
           </p>
 
@@ -96,7 +96,7 @@ export default function NotFound() {
         <p className="text-sm text-gray-500 mt-8">
           Error Code: 404 | Page Not Found |
           <Link href="/" className="text-blue-600 hover:underline ml-1">
-            Return to HireAva
+            Return to HireEva
           </Link>
         </p>
       </div>

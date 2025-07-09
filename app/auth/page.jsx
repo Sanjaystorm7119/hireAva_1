@@ -10,7 +10,7 @@ import Footer from "../auth/Footer";
 import "./Hero1.css";
 const Login = () => {
   return (
-    <div className="relative  flex max-w-7xl flex-col ">
+    <div className="relative  flex flex-col ">
       <Navbar />
       <Hero1 />
 
@@ -87,7 +87,7 @@ const Navbar = () => {
     <nav className="flex w-full items-center justify-between border-t border-b border-neutral-200 px-4 py-4 dark:border-neutral-800">
       <div className="flex items-center gap-2">
         <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-blue-500" />
-        <h1 className="text-base font-bold md:text-2xl">hireAva</h1>
+        <h1 className="text-base font-bold md:text-2xl">hireEva</h1>
       </div>
       {!user ? (
         <Link href={"./sign-in"}>

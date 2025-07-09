@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "hireAva",
+  title: "hireEva",
   description: "Created by stelleHire",
   icons: {
     icon: "/Ava_icon.svg",

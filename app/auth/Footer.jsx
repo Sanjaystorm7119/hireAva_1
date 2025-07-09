@@ -138,18 +138,18 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">A</span>
               </div>
-              <h3 className="text-xl font-bold">Ava</h3>
+              <h3 className="text-xl font-bold">Eva</h3>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
               Connecting talent with opportunity. Join thousands of
-              professionals who trust Ava to find their next career move.
+              professionals who trust Eva to find their next career move.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <MailIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">hello@ava.com</span>
+                <span className="text-gray-400">hello@eva.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <PhoneIcon className="w-5 h-5 text-gray-400" />

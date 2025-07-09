@@ -26,7 +26,7 @@ function InterviewCard({ interview, viewDetail = false }) {
   };
   const { user } = useUser();
   const onSend = () => {
-    window.location.href = `mailto:${user.emailAddresses[0]?.emailAddress}?subject=hireAva Interview Link&body=InterviewLink: ${url}`;
+    window.location.href = `mailto:${user.emailAddresses[0]?.emailAddress}?subject=hireEva Interview Link&body=InterviewLink: ${url}`;
   };
 
   return (
