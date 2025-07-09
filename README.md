@@ -57,7 +57,10 @@ You can deploy this app to Vercel, Netlify, or any platform that supports Next.j
 ## License
 
 This project is licensed under the MIT License.
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2b5c8142b9cd6df9e2832c620269ae90ce63518e
 ```
 ha/
 ├── @/
