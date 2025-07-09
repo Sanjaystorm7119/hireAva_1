@@ -186,5 +186,5 @@ ha/
 │ ├── walmart_logo.svg
 │ └── window.svg
 ├── services/
-│ ├── constants.jsx
-│ └── supabaseClient.jsx
+  ├── constants.jsx
+  └── supabaseClient.jsx
