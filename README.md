@@ -58,6 +58,7 @@ You can deploy this app to Vercel, Netlify, or any platform that supports Next.j
 
 This project is licensed under the MIT License.
 
+```
 ha/
 ├── @/
 │ └── components/
@@ -186,5 +187,6 @@ ha/
 │ ├── walmart_logo.svg
 │ └── window.svg
 ├── services/
-│ ├── constants.jsx
-│ └── supabaseClient.jsx
+  ├── constants.jsx
+  └── supabaseClient.jsx
+```
