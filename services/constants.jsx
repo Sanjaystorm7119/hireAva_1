@@ -489,23 +489,7 @@ export const FEEDBACK = `{{conversation}}
 **Generate ratings out of 10 for Technical skills , communication skills, problem solving skills and communication skills.
 *Also provide a 5 para summary  [ one on each of Techincal,Behavioural,problem solving,experience and OverallRating (should be a integer rounded off to ceil value)] , in bulleted points about the interview and one line to let me know whether the candidate is recommended or not [**all characters must be in lower case] for hiring with message.
 ##give low rating if the candidate did not speak enough or gave irrelevant answers
-#Result
-**Generate the response in JSON format like the example below:
-{
-feedback:{
-rating:{
-techincalSkills:5,
-communicationSkills:7,
-problemSolving:7,
-experience:6,
-OverallRating:6.5
-    },
-    summary: <in 3 lines>,
-    Recommendation:"",
-    RecommendationMessage:""
-}
-
-}
-
-
+#Result - must follow the below format
+**Generate the response in JSON format like the example below #keys should exactly same as below:
+{"feedback":{"rating":{"technicalSkills":1,"communicationSkills":1,"problemSolving":1,"experience":1,"OverallRating":1},"summary":["The candidate provided insufficient technical expertise information.","Unable to assess communication skills due to brief interaction.","Problem-solving discussion did not take place.","Experience discussion did not take place.","overall rating :1"],"Recommendation":"not recommended","RecommendationMessage":"too little information to progress"}}
 `;

@@ -1,4 +1,4 @@
-# hireAva Application Documentation
+# HireEva Application Documentation
 
 ## Overview
 

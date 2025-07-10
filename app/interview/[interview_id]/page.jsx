@@ -159,8 +159,8 @@ function Interview() {
                 <Image
                   width={40}
                   height={40}
-                  className="h-10 w-10"
-                  src="/Ava_icon_32.svg"
+                  className="h-10 w-10 rounded-full"
+                  src="/evaSvg.svg"
                   alt="Ava_icon_32"
                 />
               </motion.div>

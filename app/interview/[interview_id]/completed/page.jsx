@@ -204,7 +204,7 @@ function InterviewComplete() {
             <p className="text-sm">
               Questions? Contact our team at{" "}
               <span className="text-blue-400 cursor-pointer hover:text-blue-300">
-                careers@hireEva.com
+                careers@hireeva.com
               </span>
             </p>
           </div>
