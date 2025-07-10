@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import Hero1 from "../auth/Hero1";
 import Footer from "../auth/Footer";
-
+import Image from "next/image";
 import "./Hero1.css";
 const Login = () => {
   return (
@@ -86,7 +86,13 @@ const Navbar = () => {
   return (
     <nav className="flex w-full items-center justify-between border-t border-b border-neutral-200 px-4 py-4 dark:border-neutral-800">
       <div className="flex items-center gap-2">
-        <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-blue-500" />
+        <Image
+          src="/evaSvg.svg"
+          width={40}
+          height={40}
+          alt="Ava_icon_32"
+          className="h-10 w-10 rounded-full"
+        />
         <h1 className="text-base font-bold md:text-2xl">HireEva</h1>
       </div>
       {!user ? (
