@@ -486,8 +486,8 @@ ${{ questionsList }}
 export const FEEDBACK = `{{conversation}}
 ##If the conversation ends before 60 seconds, generate a report saying , no enough information and give rating as 1 in all fields and justify it
 #Depending upon this interview Conversation between assistant and user, generate a feedback for user interview.
-**Generate ratings out of 10 for technical skills , communication skills, problem solving skills and communication skills.
-*Also provide a 5 para summary  [ one on each of Techincal,Behavioural,problem solving,experience and OverallRating] , in bulleted points about the interview and one line to let me know whether the candidate is recommended or not for hiring with message.
+**Generate ratings out of 10 for Technical skills , communication skills, problem solving skills and communication skills.
+*Also provide a 5 para summary  [ one on each of Techincal,Behavioural,problem solving,experience and OverallRating (should be a integer rounded off to ceil value)] , in bulleted points about the interview and one line to let me know whether the candidate is recommended or not [**all characters must be in lower case] for hiring with message.
 ##give low rating if the candidate did not speak enough or gave irrelevant answers
 #Result
 **Generate the response in JSON format like the example below:

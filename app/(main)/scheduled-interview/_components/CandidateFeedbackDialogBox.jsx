@@ -59,7 +59,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                         className={`text-lg font-semibold ${
                           feedback?.rating?.OverallRating < 5
                             ? "text-red-600"
-                            : feedback?.rating?.OverallRating > 5 &&
+                            : feedback?.rating?.OverallRating > 6 &&
                               feedback?.rating?.OverallRating <= 10
                             ? "text-green-600"
                             : "text-gray-600"
@@ -71,7 +71,7 @@ function CandidateFeedbackDialogBox({ candidate }) {
                         Rating
                       </div>
                     </div>
-                    {/* <CandidateFeedbackDialogBox candidate={candidate} /> */}
+                    <CandidateFeedbackDialogBox candidate={candidate} />
                   </div>
                 </div>
                 <div>
