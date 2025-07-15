@@ -2,7 +2,6 @@ import {
   BriefcaseBusiness,
   Calendar,
   Code2Icon,
-  Component,
   LayoutDashboard,
   List,
   Puzzle,
@@ -69,7 +68,7 @@ step 1:
 - job description: {{jobDescription}}
 - Interview duration: {{duration}} minutes
 - Interview Type: {{type}}
-- Total Questions Required: {{duration}}*2 questions
+- Total Questions Required: {{duration}}questions
 ---
 step 2:
 
@@ -77,7 +76,7 @@ Analyse the jobdescription
 
 **Output Guidelines:**
 - Format output as JSON format with array list of questions.
-- Generate exactly {{duration}}*2 questions (e.g., 5 minutes = 10 questions, 15 minutes = 30 questions)
+- Generate exactly {{duration}} questions (e.g., 5 minutes = 5 questions, 10 minutes = 10 questions)
 **format :interviewQuestions=[
 {
 question:'',
@@ -103,7 +102,7 @@ type:'Technical/Behavioral/Experience/Problem Solving/Leadership'
 
 ---
 Return only valid JSON.
-#The goal is to create a structured, relevant and time-optimized interview plan for a {{jobTitle}} role with {{duration}}*2 questions`;
+#The goal is to create a structured, relevant and time-optimized interview plan for a {{jobTitle}} role with {{duration}}*1 questions`;
 
 export const interviewPrompt = (questionsList) => `## Introduction
 

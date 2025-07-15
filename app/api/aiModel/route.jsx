@@ -27,9 +27,10 @@ export async function POST(req) {
     });
 
     const completion = await openai.chat.completions.create({
+      model: "google/gemini-2.0-flash-001", //paid
       // model: "google/gemini-2.0-flash-exp:free",
-      // model: "deepseek/deepseek-r1-0528:free",
-      model: "openrouter/cypher-alpha:free",
+      // model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+      // model: "tngtech/deepseek-r1t2-chimera:free",
       messages: [{ role: "user", content: FINAL_PROMPT }],
     });
 

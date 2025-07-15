@@ -141,7 +141,7 @@ const Footer = () => {
               <h3 className="text-xl font-bold">Eva</h3>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Connecting talent with opportunity. Join thousands of
+              Connecting talent with <op></op>portunity. Join thousands of
               professionals who trust Eva to find their next career move.
             </p>
 

@@ -161,7 +161,7 @@ function Interview() {
                   height={40}
                   className="h-10 w-10 rounded-full"
                   src="/evaSvg.svg"
-                  alt="Ava_icon_32"
+                  alt="eva_icon_32"
                 />
               </motion.div>
               <h1 className="text-2xl md:text-3xl font-bold mb-2">

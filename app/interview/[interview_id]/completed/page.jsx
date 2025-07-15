@@ -1,15 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  CheckCircle,
-  Sparkles,
-  ArrowRight,
-  Clock,
-  User,
-  Bot,
-  Download,
-  Share2,
-} from "lucide-react";
+import { CheckCircle, Clock, User } from "lucide-react";
 
 function InterviewComplete() {
   const [showConfetti, setShowConfetti] = useState(false);

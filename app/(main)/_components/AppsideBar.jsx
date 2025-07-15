@@ -32,7 +32,7 @@ export default function AppSidebar() {
             src={"/evaSvg.svg"}
             width={70}
             height={70}
-            alt="Ava_icon_32"
+            alt="evaSvg"
           />
           {/* <p className="font-bold">Welcome, {user.firstName || "User"}</p>   */}
           <div>

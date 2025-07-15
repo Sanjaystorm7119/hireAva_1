@@ -90,7 +90,7 @@ const Navbar = () => {
           src="/evaSvg.svg"
           width={40}
           height={40}
-          alt="Ava_icon_32"
+          alt="eva_icon_32"
           className="h-10 w-10 rounded-full"
         />
         <h1 className="text-base font-bold md:text-2xl">HireEva</h1>

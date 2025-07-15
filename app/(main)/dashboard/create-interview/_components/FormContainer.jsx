@@ -150,6 +150,7 @@ function FormContainer({ onHandleInputChange, GoToNext }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="5">5 Mins</SelectItem>
+              <SelectItem value="10">10 Mins</SelectItem>
               <SelectItem value="15">15 Mins</SelectItem>
               <SelectItem value="30">30 Mins</SelectItem>
               <SelectItem value="45">45 Mins</SelectItem>
