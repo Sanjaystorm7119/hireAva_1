@@ -52,7 +52,7 @@ function Interview() {
       .from("interviews")
       .select("*")
       .eq("interviewId", interview_id);
-    console.log(interviews[0]);
+    // console.log(interviews[0]);
     setInterviewInfo({
       // firstname: user.firstName,
       // email: user.emailAddresses[0]?.emailAddress,

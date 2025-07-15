@@ -229,7 +229,7 @@ function StartInterview() {
   //   const maxRetries = 3;
 
   //   try {
-  //     // console.log("Generating feedback with conversation:", conversation);
+  // console.log("Generating feedback with conversation:", conversation);
 
   //     if (!conversation) {
   //       console.warn("No conversation data available for feedback");
@@ -256,7 +256,7 @@ function StartInterview() {
 
   //     const Content = result.data.content;
   //     const final_content = Content.replace("```json", "").replace("```", "");
-  //     // console.log("Final feedback content:", final_content);
+  //     console.log("Final feedback content:", final_content);
 
   //     // Dismiss loading toast
   //     toast.dismiss(loadingToast);
@@ -277,7 +277,7 @@ function StartInterview() {
   //         },
   //       ])
   //       .select();
-  //     // console.log(data);
+  //     console.log(data);
   //     router.replace("/interview/" + interview_id + "/completed");
   //   } catch (error) {
   //     console.error("Error generating feedback:", error);
@@ -330,7 +330,7 @@ function StartInterview() {
     const maxRetries = 3;
 
     try {
-      console.log("Generating feedback with conversation:", conversation);
+      // console.log("Generating feedback with conversation:", conversation);
 
       if (!conversation) {
         console.warn("No conversation data available for feedback");
@@ -345,7 +345,7 @@ function StartInterview() {
           typeof conversation === "string"
             ? conversation
             : JSON.stringify(conversation);
-        console.log("Conversation data length:", conversationData.length);
+        // console.log("Conversation data length:", conversationData.length);
       } catch (parseError) {
         console.error("Failed to process conversation data:", parseError);
         toast.error("Invalid conversation data");
@@ -364,7 +364,7 @@ function StartInterview() {
         user_email: user.primaryEmailAddress?.emailAddress,
       };
 
-      console.log("Making API request to /api/ai-feedback");
+      // console.log("Making API request to /api/ai-feedback");
 
       const result = await axios.post("/api/ai-feedback", requestPayload, {
         timeout: 30000, // 30 second timeout
@@ -373,7 +373,7 @@ function StartInterview() {
         },
       });
 
-      console.log("Feedback API response:", result?.data);
+      // console.log("Feedback API response:", result?.data);
 
       const Content = result.data.content;
 
@@ -382,7 +382,7 @@ function StartInterview() {
       }
 
       const final_content = Content.replace("```json", "").replace("```", "");
-      console.log("Final feedback content:", final_content);
+      // console.log("Final feedback content:", final_content);
 
       // Validate JSON before parsing
       let feedbackData;
@@ -421,7 +421,7 @@ function StartInterview() {
         return;
       }
 
-      console.log("Feedback saved successfully:", data);
+      // console.log("Feedback saved successfully:", data);
       router.replace("/interview/" + interview_id + "/completed");
     } catch (error) {
       console.error("Error generating feedback:", error);
@@ -535,7 +535,7 @@ function StartInterview() {
       })
       .join("\n");
 
-    console.log("Questions to ask:", questionsList);
+    // console.log("Questions to ask:", questionsList);
     // console.log(interviewInfo?.interviewData?.duration);
 
     const assistantOptions = {
