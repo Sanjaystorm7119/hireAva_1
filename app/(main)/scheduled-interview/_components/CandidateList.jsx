@@ -59,32 +59,30 @@ function CandidateList({ CandidateDetails }) {
 
                 {/* Score and Action */}
                 <div className="flex items-center gap-4">
-                  {/* <div className="text-right">
+                  <div className="text-right">
                     <div className="text-lg font-semibold text-green-600">
                       <div
                         className={`text-lg font-semibold ${
                           parseInt(
-                            candidate.interview_feedback[0].feedback.feedback
-                              .rating.OverallRating
+                            candidate?.feedback?.feedback?.rating?.OverallRating
                           ) < 5
                             ? "text-red-600"
                             : parseInt(
-                                candidate.interview_feedback[0].feedback
-                                  .feedback.rating.OverallRating
+                                candidate?.feedback?.feedback?.rating
+                                  ?.OverallRating
                               ) === 5
                             ? "text-gray-600"
                             : "text-green-600"
                         }`}
                       >
                         {parseInt(
-                          candidate.interview_feedback[0].feedback.feedback
-                            .rating.OverallRating
+                          candidate?.feedback?.feedback?.rating?.OverallRating
                         )}
                         /10
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground">Rating</div>
-                  </div> */}
+                  </div>
                   <CandidateFeedbackDialogBox candidate={candidate} />
                 </div>
               </div>
