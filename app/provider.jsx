@@ -24,8 +24,8 @@ function Provider({ children }) {
           email: user.primaryEmailAddress?.emailAddress,
           picture: user.imageUrl,
           created_at: new Date().toISOString(),
-          firstName: user.firstName,
-          lastName: user.lastName, // Fixed: "lastname" → "lastName"
+          firstname: user.firstName,
+          lastname: user.lastName,
         };
 
         const { error: insertError } = await supabase
