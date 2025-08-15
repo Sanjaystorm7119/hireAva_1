@@ -28,7 +28,7 @@ function InterviewDetails() {
               duration,
               interviewId,  
               created_at,
-              interview_feedback:"interview-feedback"(userEmail,userName,feedback,created_at)
+              interview_feedback:"interview-feedback"(userEmail,userName,feedback,created_at,transcript)
             `
       )
 

@@ -21,6 +21,7 @@ function StartInterview() {
   const [conversation, setConversation] = useState();
   const [loading, setLoading] = useState(false);
   const [isMicMuted, setIsMicMuted] = useState(false);
+  const [callId, setCallId] = useState(null); // Add callId state
 
   // Add timer state
   const [timeLeft, setTimeLeft] = useState(0);
@@ -35,6 +36,14 @@ function StartInterview() {
   // Add ref to track if feedback is being generated
   const feedbackGenerating = useRef(false);
   const conversationRef = useRef(null);
+
+  // Debug: Monitor callId state changes
+  useEffect(() => {
+    console.log("=== CALLID STATE DEBUG ===");
+    console.log("callId state changed to:", callId);
+    console.log("callId type:", typeof callId);
+    console.log("=== END CALLID STATE DEBUG ===");
+  }, [callId]);
 
   // Memoize vapi instance to prevent recreation on every render
   const vapi = useMemo(
@@ -149,6 +158,36 @@ function StartInterview() {
     return result;
   };
 
+  // Helper function to clean conversation data and filter out system messages
+  const cleanConversationData = (conversation) => {
+    if (!conversation) return null;
+
+    try {
+      let conversationData;
+
+      // Parse if it's a string
+      if (typeof conversation === "string") {
+        conversationData = JSON.parse(conversation);
+      } else {
+        conversationData = conversation;
+      }
+
+      // Filter out system messages and clean the data
+      const cleanedConversation = conversationData
+        .filter((item) => item.role !== "system")
+        .map((item) => ({
+          role: item.role,
+          content: item.content,
+          timestamp: item.timestamp || new Date().toISOString(),
+        }));
+
+      return cleanedConversation;
+    } catch (error) {
+      console.error("Error cleaning conversation data:", error);
+      return null;
+    }
+  };
+
   // Update conversation ref when conversation state changes
   useEffect(() => {
     conversationRef.current = conversation;
@@ -177,8 +216,47 @@ function StartInterview() {
   useEffect(() => {
     if (!vapi) return;
 
-    vapi.on("call-start", () => {
-      console.log("Call started");
+    // Debug: Log all Vapi events to understand the data flow
+    const logEvent = (eventName, data) => {
+      console.log(`=== VAPI EVENT: ${eventName} ===`);
+      console.log("Event data:", data);
+      console.log("Event data keys:", Object.keys(data || {}));
+      if (data?.call) {
+        console.log("call object:", data.call);
+        console.log("call.id:", data.call.id);
+      }
+      console.log(`=== END VAPI EVENT: ${eventName} ===`);
+    };
+
+    vapi.on("call-start", (callData) => {
+      logEvent("call-start", callData);
+      console.log("=== VAPI CALL-START DEBUG ===");
+      console.log("Full callData:", callData);
+      console.log("CallData keys:", Object.keys(callData || {}));
+      console.log("CallData.call:", callData?.call);
+      console.log("CallData.call.id:", callData?.call?.id);
+      console.log("CallData.call.id type:", typeof callData?.call?.id);
+
+      // Vapi is not providing callId in client events, so generate our own
+      const generatedCallId = `call_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+      setCallId(generatedCallId);
+      console.log("Generated Call ID:", generatedCallId);
+      console.log("Current callId state after set:", generatedCallId);
+
+      // Try to get callId from Vapi if available (fallback)
+      if (callData?.call?.id) {
+        setCallId(callData.call.id);
+        console.log("Vapi Call ID captured and set:", callData.call.id);
+      } else if (callData?.id) {
+        setCallId(callData.id);
+        console.log("Vapi Call ID (alternative path):", callData.id);
+      } else {
+        console.log("Using generated Call ID:", generatedCallId);
+      }
+      console.log("=== END VAPI DEBUG ===");
+
       toast("Call Connected");
       setCallStarted(true);
       setIsTimerActive(true); // Start timer when call starts
@@ -190,21 +268,35 @@ function StartInterview() {
     //   toast.error("Call error: " + error.message);
     // });
 
-    vapi.on("speech-start", () => {
+    vapi.on("speech-start", (data) => {
+      logEvent("speech-start", data);
       console.log("Speech has started");
       setActiveUser(false);
     });
 
-    vapi.on("speech-end", () => {
+    vapi.on("speech-end", (data) => {
+      logEvent("speech-end", data);
       console.log("Speech has ended");
       setActiveUser(true);
     });
 
     vapi.on("call-end", (callData) => {
-      // console.log("Call ended with data:", callData);
+      logEvent("call-end", callData);
+      console.log("=== VAPI CALL-END DEBUG ===");
+      console.log("Call ended with data:", callData);
+      console.log("Current callId state:", callId);
+      console.log("callData.call:", callData?.call);
+      console.log("callData.call.id:", callData?.call?.id);
+
       toast("Interview ended");
       setIsTimerActive(false); // Stop timer when call ends
       setTimerExpired(false); // Reset timer expired state
+
+      // Ensure we have the callId - Vapi docs show it's in event.call.id
+      const finalCallId = callId || callData?.call?.id;
+      console.log("Final Call ID for transcript:", finalCallId);
+      console.log("Final Call ID type:", typeof finalCallId);
+      console.log("=== END CALL-END DEBUG ===");
 
       // Use the conversation from the call-end event or the current state
       const finalConversation =
@@ -215,7 +307,7 @@ function StartInterview() {
         feedbackGenerating.current = true;
         setLoading(true);
         setTimeout(() => {
-          GenerateFeedback(finalConversation);
+          GenerateFeedback(finalConversation, finalCallId);
         }, 500);
       }
     });
@@ -223,7 +315,7 @@ function StartInterview() {
     return () => {
       vapi.removeAllListeners();
     };
-  }, [vapi]); // Only depend on vapi, not conversation
+  }, [vapi, callId]); // Add callId to dependencies
 
   // const GenerateFeedback = async (conversation, retryCount = 0) => {
   //   const maxRetries = 3;
@@ -326,7 +418,7 @@ function StartInterview() {
   //   }
   // };
 
-  const GenerateFeedback = async (conversation, retryCount = 0) => {
+  const GenerateFeedback = async (conversation, callId, retryCount = 0) => {
     const maxRetries = 3;
 
     try {
@@ -338,14 +430,19 @@ function StartInterview() {
         return;
       }
 
+      // Clean the conversation data and filter out system messages
+      const cleanedConversation = cleanConversationData(conversation);
+      if (!cleanedConversation) {
+        console.warn("Failed to clean conversation data");
+        setLoading(false);
+        return;
+      }
+
       // Validate conversation data before sending
       let conversationData;
       try {
-        conversationData =
-          typeof conversation === "string"
-            ? conversation
-            : JSON.stringify(conversation);
-        // console.log("Conversation data length:", conversationData.length);
+        conversationData = JSON.stringify(cleanedConversation);
+        // console.log("Cleaned conversation data length:", conversationData.length);
       } catch (parseError) {
         console.error("Failed to process conversation data:", parseError);
         toast.error("Invalid conversation data");
@@ -362,6 +459,7 @@ function StartInterview() {
         conversation: conversationData,
         interview_id: interview_id,
         user_email: user.primaryEmailAddress?.emailAddress,
+        call_id: callId, // Add callId to payload
       };
 
       // console.log("Making API request to /api/ai-feedback");
@@ -401,7 +499,20 @@ function StartInterview() {
         id: "feedback-success",
       });
 
-      // Save to DB here
+      // Save to DB here with callId and cleaned transcript
+      console.log("=== DATABASE INSERT DEBUG ===");
+      console.log("CallId being inserted:", callId);
+      console.log("CallId type:", typeof callId);
+      console.log("Full insert data:", {
+        userName: user?.firstName,
+        userEmail: user.primaryEmailAddress?.emailAddress,
+        interview_Id: interview_id,
+        feedback: feedbackData,
+        recommendation: false,
+        call_id: callId,
+        transcript: conversationData,
+      });
+
       const { data, error } = await supabase
         .from("interview-feedback")
         .insert([
@@ -411,14 +522,35 @@ function StartInterview() {
             interview_Id: interview_id,
             feedback: feedbackData,
             recommendation: false,
+            call_id: callId, // Add callId
+            transcript: conversationData, // Add cleaned transcript without system messages
           },
         ])
         .select();
 
       if (error) {
         console.error("Supabase insert error:", error);
+        console.error("Supabase error details:", error);
         toast.error("Failed to save feedback to database");
         return;
+      }
+
+      console.log("Database insert successful:", data);
+      console.log("=== END DATABASE DEBUG ===");
+
+      // Backup: Also try to save transcript using the save-transcript API if callId is available
+      if (callId) {
+        try {
+          await axios.post("/api/save-transcript", {
+            callId: callId,
+            interviewId: interview_id,
+            userEmail: user.primaryEmailAddress?.emailAddress,
+          });
+          console.log("Transcript backup saved successfully");
+        } catch (transcriptError) {
+          console.error("Failed to save transcript backup:", transcriptError);
+          // Don't fail the whole process if transcript saving fails
+        }
       }
 
       // console.log("Feedback saved successfully:", data);
@@ -462,7 +594,7 @@ function StartInterview() {
                 }
               );
               setTimeout(() => {
-                GenerateFeedback(conversation, retryCount + 1);
+                GenerateFeedback(conversation, callId, retryCount + 1);
               }, retryAfter * 1000);
               return;
             } else {
@@ -483,7 +615,7 @@ function StartInterview() {
                 }
               );
               setTimeout(() => {
-                GenerateFeedback(conversation, retryCount + 1);
+                GenerateFeedback(conversation, callId, retryCount + 1);
               }, 5000);
               return;
             } else {

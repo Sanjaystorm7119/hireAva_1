@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
-  const { conversation } = await req.json();
+  const { conversation, interview_id, user_email, call_id } = await req.json();
   const FINAL_PROMPT = FEEDBACK.replace(
     "{{conversation}}",
     JSON.stringify(conversation)
@@ -27,5 +27,15 @@ export async function POST(req) {
   }
   // console.log(completion.choices[0].message);
 
-  return NextResponse.json(completion.choices[0].message, { status: 200 });
+  // Return both the AI feedback and the original data for saving
+  return NextResponse.json(
+    {
+      ...completion.choices[0].message,
+      call_id: call_id,
+      interview_id: interview_id,
+      user_email: user_email,
+      transcript: conversation,
+    },
+    { status: 200 }
+  );
 }

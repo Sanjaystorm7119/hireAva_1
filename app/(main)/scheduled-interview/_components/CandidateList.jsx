@@ -11,16 +11,12 @@ import CandidateFeedbackDialogBox from "./CandidateFeedbackDialogBox";
 function CandidateList({ CandidateDetails }) {
   const getRating = (candidate) => {
     if (
-      !candidate.interview_feedback ||
-      candidate.interview_feedback.length === 0 ||
-      !candidate.interview_feedback[0]?.feedback?.feedback?.rating
-        ?.OverallRating
+      !candidate.feedback ||
+      !candidate.feedback?.feedback?.rating?.OverallRating
     ) {
       return null;
     }
-    return parseInt(
-      candidate.interview_feedback[0].feedback.feedback.rating.OverallRating
-    );
+    return parseInt(candidate.feedback.feedback.rating.OverallRating);
   };
 
   return (
