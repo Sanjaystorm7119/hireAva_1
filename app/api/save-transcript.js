@@ -16,7 +16,7 @@ export async function POST(req) {
     );
 
     const vapiData = await vapiResponse.json();
-    console.log("Vapi transcript API response:", vapiData);
+    // console.log("Vapi transcript API response:", vapiData);
 
     // Transform Vapi log to UI transcript format and filter out system messages
     let transcript = [];

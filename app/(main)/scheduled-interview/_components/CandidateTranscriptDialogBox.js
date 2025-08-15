@@ -14,20 +14,20 @@ function CandidateTranscriptDialogBox({ candidate }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Temporary debugging to see the data structure
-  console.log("=== TRANSCRIPT DEBUG ===");
-  console.log("Full candidate object:", candidate);
-  console.log("Interview feedback:", candidate?.interview_feedback);
-  console.log("Direct transcript:", candidate?.transcript);
+  // console.log("=== TRANSCRIPT DEBUG ===");
+  // console.log("Full candidate object:", candidate);
+  // console.log("Interview feedback:", candidate?.interview_feedback);
+  // console.log("Direct transcript:", candidate?.transcript);
 
   // Parse transcript if it's a JSON string and filter out system messages
   let transcript = [];
   try {
     // Debug: Log the candidate structure to understand the data flow
-    console.log("=== TRANSCRIPT DATA DEBUG ===");
-    console.log("Full candidate object:", candidate);
-    console.log("Candidate keys:", Object.keys(candidate || {}));
-    console.log("Candidate.feedback:", candidate?.feedback);
-    console.log("Candidate.interview_feedback:", candidate?.interview_feedback);
+    // console.log("=== TRANSCRIPT DATA DEBUG ===");
+    // console.log("Full candidate object:", candidate);
+    // console.log("Candidate keys:", Object.keys(candidate || {}));
+    // console.log("Candidate.feedback:", candidate?.feedback);
+    // console.log("Candidate.interview_feedback:", candidate?.interview_feedback);
 
     // Try to get transcript from different possible locations
     let rawTranscript = null;
@@ -35,10 +35,10 @@ function CandidateTranscriptDialogBox({ candidate }) {
     // First, try to get transcript from the feedback object (same pattern as CandidateFeedbackDialogBox)
     if (candidate?.feedback?.transcript) {
       rawTranscript = candidate.feedback.transcript;
-      console.log(
-        "Found transcript in candidate.feedback.transcript:",
-        rawTranscript
-      );
+      // console.log(
+      //   "Found transcript in candidate.feedback.transcript:",
+      //   rawTranscript
+      // );
     }
     // Second, try to get transcript from interview_feedback array
     else if (
@@ -56,27 +56,27 @@ function CandidateTranscriptDialogBox({ candidate }) {
           feedbackRecordWithTranscript
         );
         rawTranscript = feedbackRecordWithTranscript.transcript;
-        console.log("Transcript from feedback record:", rawTranscript);
+        // console.log("Transcript from feedback record:", rawTranscript);
       } else {
-        console.log("No feedback record with transcript found");
+        // console.log("No feedback record with transcript found");
       }
     }
     // Fallback to direct transcript field if available
     else if (candidate?.transcript) {
       rawTranscript = candidate.transcript;
-      console.log("Found transcript in candidate.transcript:", rawTranscript);
+      // console.log("Found transcript in candidate.transcript:", rawTranscript);
     }
 
-    console.log("Final rawTranscript to process:", rawTranscript);
+    // console.log("Final rawTranscript to process:", rawTranscript);
 
     if (!rawTranscript || rawTranscript.length === 0) {
-      console.log("No raw transcript data found");
+      // console.log("No raw transcript data found");
       transcript = [];
     } else if (typeof rawTranscript === "string") {
-      console.log("Parsing string transcript:", rawTranscript);
+      // console.log("Parsing string transcript:", rawTranscript);
       try {
         rawTranscript = JSON.parse(rawTranscript);
-        console.log("Parsed transcript:", rawTranscript);
+        // console.log("Parsed transcript:", rawTranscript);
       } catch (parseError) {
         console.error("Failed to parse transcript JSON:", parseError);
         transcript = [];
@@ -86,7 +86,7 @@ function CandidateTranscriptDialogBox({ candidate }) {
 
     // Ensure rawTranscript is an array before proceeding
     if (!Array.isArray(rawTranscript)) {
-      console.log("Transcript is not an array:", rawTranscript);
+      // console.log("Transcript is not an array:", rawTranscript);
       transcript = [];
     } else {
       // Filter out system messages and transform to clean format
@@ -113,8 +113,8 @@ function CandidateTranscriptDialogBox({ candidate }) {
         .filter(Boolean); // Remove null items
     }
 
-    console.log("Final cleaned transcript:", transcript);
-    console.log("=== END TRANSCRIPT DEBUG ===");
+    // console.log("Final cleaned transcript:", transcript);
+    // console.log("=== END TRANSCRIPT DEBUG ===");
   } catch (e) {
     console.error("Error parsing transcript:", e);
     transcript = [];

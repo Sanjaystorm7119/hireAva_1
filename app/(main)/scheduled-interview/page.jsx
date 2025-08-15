@@ -47,20 +47,20 @@ function ScheduledInterview() {
       }
 
       // Debug: Log the raw data from Supabase
-      console.log("=== SUPABASE DATA DEBUG ===");
-      console.log("Raw data from Supabase:", data);
-      if (data && data.length > 0) {
-        console.log("First interview data:", data[0]);
-        console.log(
-          "Interview feedback structure:",
-          data[0]?.interview_feedback
-        );
-        console.log(
-          "Transcript from feedback:",
-          data[0]?.interview_feedback?.[0]?.transcript
-        );
-      }
-      console.log("=== END SUPABASE DEBUG ===");
+      // console.log("=== SUPABASE DATA DEBUG ===");
+      // console.log("Raw data from Supabase:", data);
+      // if (data && data.length > 0) {
+      //   console.log("First interview data:", data[0]);
+      //   console.log(
+      //     "Interview feedback structure:",
+      //     data[0]?.interview_feedback
+      //   );
+      //   console.log(
+      //     "Transcript from feedback:",
+      //     data[0]?.interview_feedback?.[0]?.transcript
+      //   );
+      // }
+      // console.log("=== END SUPABASE DEBUG ===");
 
       // console.log("Data:", data);
       setInterviewList(data || []);

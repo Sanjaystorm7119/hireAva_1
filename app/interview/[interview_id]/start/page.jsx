@@ -37,14 +37,6 @@ function StartInterview() {
   const feedbackGenerating = useRef(false);
   const conversationRef = useRef(null);
 
-  // Debug: Monitor callId state changes
-  useEffect(() => {
-    console.log("=== CALLID STATE DEBUG ===");
-    console.log("callId state changed to:", callId);
-    console.log("callId type:", typeof callId);
-    console.log("=== END CALLID STATE DEBUG ===");
-  }, [callId]);
-
   // Memoize vapi instance to prevent recreation on every render
   const vapi = useMemo(
     () => new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY),
@@ -218,24 +210,24 @@ function StartInterview() {
 
     // Debug: Log all Vapi events to understand the data flow
     const logEvent = (eventName, data) => {
-      console.log(`=== VAPI EVENT: ${eventName} ===`);
-      console.log("Event data:", data);
-      console.log("Event data keys:", Object.keys(data || {}));
+      // console.log(`=== VAPI EVENT: ${eventName} ===`);
+      // console.log("Event data:", data);
+      // console.log("Event data keys:", Object.keys(data || {}));
       if (data?.call) {
-        console.log("call object:", data.call);
-        console.log("call.id:", data.call.id);
+        // console.log("call object:", data.call);
+        // console.log("call.id:", data.call.id);
       }
-      console.log(`=== END VAPI EVENT: ${eventName} ===`);
+      // console.log(`=== END VAPI EVENT: ${eventName} ===`);
     };
 
     vapi.on("call-start", (callData) => {
       logEvent("call-start", callData);
-      console.log("=== VAPI CALL-START DEBUG ===");
-      console.log("Full callData:", callData);
-      console.log("CallData keys:", Object.keys(callData || {}));
-      console.log("CallData.call:", callData?.call);
-      console.log("CallData.call.id:", callData?.call?.id);
-      console.log("CallData.call.id type:", typeof callData?.call?.id);
+      // console.log("=== VAPI CALL-START DEBUG ===");
+      // console.log("Full callData:", callData);
+      // console.log("CallData keys:", Object.keys(callData || {}));
+      // console.log("CallData.call:", callData?.call);
+      // console.log("CallData.call.id:", callData?.call?.id);
+      // console.log("CallData.call.id type:", typeof callData?.call?.id);
 
       // Vapi is not providing callId in client events, so generate our own
       const generatedCallId = `call_${Date.now()}_${Math.random()
@@ -248,14 +240,14 @@ function StartInterview() {
       // Try to get callId from Vapi if available (fallback)
       if (callData?.call?.id) {
         setCallId(callData.call.id);
-        console.log("Vapi Call ID captured and set:", callData.call.id);
+        // console.log("Vapi Call ID captured and set:", callData.call.id);
       } else if (callData?.id) {
         setCallId(callData.id);
-        console.log("Vapi Call ID (alternative path):", callData.id);
+        // console.log("Vapi Call ID (alternative path):", callData.id);
       } else {
-        console.log("Using generated Call ID:", generatedCallId);
+        // console.log("Using generated Call ID:", generatedCallId);
       }
-      console.log("=== END VAPI DEBUG ===");
+      // console.log("=== END VAPI DEBUG ===");
 
       toast("Call Connected");
       setCallStarted(true);
@@ -270,23 +262,23 @@ function StartInterview() {
 
     vapi.on("speech-start", (data) => {
       logEvent("speech-start", data);
-      console.log("Speech has started");
+      // console.log("Speech has started");
       setActiveUser(false);
     });
 
     vapi.on("speech-end", (data) => {
       logEvent("speech-end", data);
-      console.log("Speech has ended");
+      // console.log("Speech has ended");
       setActiveUser(true);
     });
 
     vapi.on("call-end", (callData) => {
       logEvent("call-end", callData);
-      console.log("=== VAPI CALL-END DEBUG ===");
-      console.log("Call ended with data:", callData);
-      console.log("Current callId state:", callId);
-      console.log("callData.call:", callData?.call);
-      console.log("callData.call.id:", callData?.call?.id);
+      // console.log("=== VAPI CALL-END DEBUG ===");
+      // console.log("Call ended with data:", callData);
+      // console.log("Current callId state:", callId);
+      // console.log("callData.call:", callData?.call);
+      // console.log("callData.call.id:", callData?.call?.id);
 
       toast("Interview ended");
       setIsTimerActive(false); // Stop timer when call ends
@@ -294,9 +286,9 @@ function StartInterview() {
 
       // Ensure we have the callId - Vapi docs show it's in event.call.id
       const finalCallId = callId || callData?.call?.id;
-      console.log("Final Call ID for transcript:", finalCallId);
-      console.log("Final Call ID type:", typeof finalCallId);
-      console.log("=== END CALL-END DEBUG ===");
+      // console.log("Final Call ID for transcript:", finalCallId);
+      // console.log("Final Call ID type:", typeof finalCallId);
+      // console.log("=== END CALL-END DEBUG ===");
 
       // Use the conversation from the call-end event or the current state
       const finalConversation =
@@ -500,18 +492,18 @@ function StartInterview() {
       });
 
       // Save to DB here with callId and cleaned transcript
-      console.log("=== DATABASE INSERT DEBUG ===");
-      console.log("CallId being inserted:", callId);
-      console.log("CallId type:", typeof callId);
-      console.log("Full insert data:", {
-        userName: user?.firstName,
-        userEmail: user.primaryEmailAddress?.emailAddress,
-        interview_Id: interview_id,
-        feedback: feedbackData,
-        recommendation: false,
-        call_id: callId,
-        transcript: conversationData,
-      });
+      // console.log("=== DATABASE INSERT DEBUG ===");
+      // console.log("CallId being inserted:", callId);
+      // console.log("CallId type:", typeof callId);
+      // console.log("Full insert data:", {
+      //   userName: user?.firstName,
+      //   userEmail: user.primaryEmailAddress?.emailAddress,
+      //   interview_Id: interview_id,
+      //   feedback: feedbackData,
+      //   recommendation: false,
+      //   call_id: callId,
+      //   transcript: conversationData,
+      // });
 
       const { data, error } = await supabase
         .from("interview-feedback")
@@ -535,8 +527,8 @@ function StartInterview() {
         return;
       }
 
-      console.log("Database insert successful:", data);
-      console.log("=== END DATABASE DEBUG ===");
+      // console.log("Database insert successful:", data);
+      // console.log("=== END DATABASE DEBUG ===");
 
       // Backup: Also try to save transcript using the save-transcript API if callId is available
       if (callId) {
