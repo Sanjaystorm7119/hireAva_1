@@ -51,14 +51,14 @@ function CandidateTranscriptDialogBox({ candidate }) {
       );
 
       if (feedbackRecordWithTranscript) {
-        console.log(
-          "Found feedback record with transcript:",
-          feedbackRecordWithTranscript
-        );
+        // console.log(
+        //   "Found feedback record with transcript:",
+        //   feedbackRecordWithTranscript
+        // );
         rawTranscript = feedbackRecordWithTranscript.transcript;
         // console.log("Transcript from feedback record:", rawTranscript);
       } else {
-        // console.log("No feedback record with transcript found");
+        console.log("No feedback record with transcript found");
       }
     }
     // Fallback to direct transcript field if available

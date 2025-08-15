@@ -234,8 +234,8 @@ function StartInterview() {
         .toString(36)
         .substr(2, 9)}`;
       setCallId(generatedCallId);
-      console.log("Generated Call ID:", generatedCallId);
-      console.log("Current callId state after set:", generatedCallId);
+      // console.log("Generated Call ID:", generatedCallId);
+      // console.log("Current callId state after set:", generatedCallId);
 
       // Try to get callId from Vapi if available (fallback)
       if (callData?.call?.id) {
