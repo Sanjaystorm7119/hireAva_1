@@ -670,9 +670,12 @@ function StartInterview() {
         " how are you , Ready for your interview on " +
         interviewInfo?.interviewData?.jobPosition,
       transcriber: {
+        // provider: "deepgram",
+        // model: "nova-3",
+        // language: "en-US",
         provider: "deepgram",
-        model: "nova-2",
-        language: "en-US",
+        model: "nova-3",
+        language: "en",
       },
       voice: {
         provider: "vapi",
