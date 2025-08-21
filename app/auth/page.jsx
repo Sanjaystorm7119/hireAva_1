@@ -7,12 +7,12 @@ import { useUser } from "@clerk/nextjs";
 import Hero1 from "../auth/Hero1";
 import Footer from "../auth/Footer";
 import Image from "next/image";
-import "./Hero1.css";
+// import "./Hero1.css";
 const Login = () => {
   return (
     <div className="relative  flex flex-col ">
       <Navbar />
-      <Hero1 />
+      {/* <Hero1 /> */}
 
       <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80 dark:bg-neutral-800/80">
         <div className="absolute top-0 h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
@@ -25,13 +25,13 @@ const Login = () => {
       </div>
       <div className="px-4 py-10 md:py-20">
         <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {"Get Hired Fast".split(" ").map((word, index) => (
+          {"Get Interviewed Quick".split(" ").map((word, index) => (
             <motion.span
               key={index}
               initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
               animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               transition={{
-                duration: 0.3,
+                duration: 0.5,
                 delay: index * 0.1,
                 ease: "easeInOut",
               }}
@@ -54,7 +54,7 @@ const Login = () => {
           }}
           className="relative z-10 mx-auto max-w-xl py-4 text-center text-lg font-normal text-neutral-600 dark:text-neutral-400"
         >
-          With AI, you can now interview anytime anywhere
+          With Eva, you can now interview anytime anywhere
         </motion.p>
         <Link href={"/dashboard"}>
           <motion.div
