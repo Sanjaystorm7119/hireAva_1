@@ -12,7 +12,7 @@ function Welcome() {
         <p className="text-lg font-bold ">
           Welcome, {user.firstName || "User"}
         </p>
-        <h2 className="text-gray-800 ">Hassle free Hiring with AI</h2>
+        <h2 className="text-gray-800 ">Hassle free Interviews with EVA</h2>
       </div>
       <Image
         src={user.imageUrl}
