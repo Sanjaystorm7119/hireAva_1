@@ -113,7 +113,7 @@ const Footer = () => {
     legal: [
       { name: "Privacy Policy", href: "#" },
       { name: "Terms of Service", href: "#" },
-      { name: "Cookie Policy", href: "#" },
+      // { name: "Cookie Policy", href: "#" },
       { name: "GDPR", href: "#" },
       { name: "Disclaimer", href: "#" },
     ],
@@ -141,23 +141,22 @@ const Footer = () => {
               <h3 className="text-xl font-bold">Eva</h3>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Connecting talent with opportunity. Join thousands of
-              professionals who trust Eva to find their next career move.
+              Interview 1000s in minutes.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <MailIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">hello@eva.com</span>
+                <span className="text-gray-400">pallavi@stellehire.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <PhoneIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">+1 (555) 123-4567</span>
+                <span className="text-gray-400">+1 (669) 204-6466</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPinIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-400">San Francisco, CA</span>
+                <span className="text-gray-400">Palo Alto, CA</span>
               </div>
             </div>
           </div>
@@ -195,8 +194,8 @@ const Footer = () => {
               ))}
             </ul>
           </div>
-
-          {/* Resources Links */}
+{/* 
+          Resources Links
           <div>
             <h4 className="text-lg font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
@@ -211,7 +210,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Legal Links */}
           <div>
