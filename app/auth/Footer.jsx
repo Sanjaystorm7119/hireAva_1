@@ -122,7 +122,11 @@ const Footer = () => {
   const socialLinks = [
     { name: "Facebook", icon: FacebookIcon, href: "#" },
     { name: "Twitter", icon: TwitterIcon, href: "#" },
-    { name: "LinkedIn", icon: LinkedInIcon, href: "#" },
+    {
+      name: "LinkedIn",
+      icon: LinkedInIcon,
+      href: "https://www.linkedin.com/company/hireeva-ai",
+    },
     { name: "Instagram", icon: InstagramIcon, href: "#" },
     { name: "YouTube", icon: YouTubeIcon, href: "#" },
   ];
@@ -194,7 +198,7 @@ const Footer = () => {
               ))}
             </ul>
           </div>
-{/* 
+          {/* 
           Resources Links
           <div>
             <h4 className="text-lg font-semibold mb-4">Resources</h4>
