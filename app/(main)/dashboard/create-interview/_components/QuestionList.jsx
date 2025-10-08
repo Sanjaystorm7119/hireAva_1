@@ -94,7 +94,7 @@ function FinalQuestionItem() {
           </h2>
           <h2 className="text-sm text-primary">Type: Closing</h2>
           <p className="text-xs text-gray-500 mt-1">
-            This question will always appear at the end of the interview
+            This question will always be asked at the end of the interview
           </p>
         </div>
       </div>
