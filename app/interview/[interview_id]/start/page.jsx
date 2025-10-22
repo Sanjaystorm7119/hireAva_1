@@ -22,11 +22,15 @@ function StartInterview() {
   const [loading, setLoading] = useState(false);
   const [isMicMuted, setIsMicMuted] = useState(false);
   const [callId, setCallId] = useState(null); // Add callId state
+  const [interviewPhase, setInterviewPhase] = useState("ready"); // Track interview phase: ready, briefing, questions, ended
+  const [isInterrupting, setIsInterrupting] = useState(false); // Track if AI is being interrupted
+  const [interruptionCount, setInterruptionCount] = useState(0); // Track interruption frequency
 
   // Add timer state
   const [timeLeft, setTimeLeft] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timerExpired, setTimerExpired] = useState(false); // Track if timer has expired
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Track current question
   const timerRef = useRef(null);
 
   const router = useRouter();
@@ -36,12 +40,21 @@ function StartInterview() {
   // Add ref to track if feedback is being generated
   const feedbackGenerating = useRef(false);
   const conversationRef = useRef(null);
+  const interruptionTimeoutRef = useRef(null);
+  const lastInterruptionTime = useRef(0);
 
   // Memoize vapi instance to prevent recreation on every render
-  const vapi = useMemo(
-    () => new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY),
-    []
-  );
+  const vapi = useMemo(() => {
+    console.log(
+      "Creating Vapi instance with key:",
+      process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY ? "Key present" : "Key missing"
+    );
+    if (!process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY) {
+      console.error("VAPI_PUBLIC_KEY is missing!");
+      return null;
+    }
+    return new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY);
+  }, []);
   const { user } = useUser();
 
   // Helper function to format time as MM:SS or HH:MM:SS
@@ -96,11 +109,14 @@ function StartInterview() {
     return () => clearInterval(timerRef.current);
   }, [isTimerActive, timeLeft]);
 
-  // Clean up timer on unmount
+  // Clean up timer and interruption timeout on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+      }
+      if (interruptionTimeoutRef.current) {
+        clearTimeout(interruptionTimeoutRef.current);
       }
     };
   }, []);
@@ -251,6 +267,7 @@ function StartInterview() {
 
       toast("Call Connected");
       setCallStarted(true);
+      setInterviewPhase("briefing"); // Set to briefing phase
       setIsTimerActive(true); // Start timer when call starts
     });
 
@@ -264,12 +281,105 @@ function StartInterview() {
       logEvent("speech-start", data);
       // console.log("Speech has started");
       setActiveUser(false);
+
+      // Debounce rapid interruptions to prevent excessive processing
+      const now = Date.now();
+      const timeSinceLastInterruption = now - lastInterruptionTime.current;
+
+      if (timeSinceLastInterruption < 200) {
+        // Skip if too soon after last interruption
+        return;
+      }
+
+      lastInterruptionTime.current = now;
+      setIsInterrupting(true);
+
+      // Clear any existing timeout
+      if (interruptionTimeoutRef.current) {
+        clearTimeout(interruptionTimeoutRef.current);
+      }
+
+      // Enhanced interruption handling with better error recovery and timing
+      const handleInterruption = () => {
+        try {
+          // Stop any ongoing AI speech immediately
+          vapi.stopSpeaking();
+
+          // Update interruption count for adaptive timing
+          setInterruptionCount((prev) => prev + 1);
+
+          // Dynamic mute duration based on interruption frequency and phase
+          let muteDuration = 300;
+          if (interruptionCount > 3) {
+            muteDuration = 500; // Longer mute for frequent interruptions
+          } else if (interviewPhase === "briefing") {
+            muteDuration = 250; // Shorter mute during briefing for better responsiveness
+          }
+
+          // Mute briefly to ensure clean interruption and prevent feedback
+          vapi.setMuted(true);
+
+          // Use requestAnimationFrame for better timing precision
+          requestAnimationFrame(() => {
+            interruptionTimeoutRef.current = setTimeout(() => {
+              vapi.setMuted(false);
+              setIsInterrupting(false);
+            }, muteDuration);
+          });
+        } catch (err) {
+          console.error("Failed to interrupt AI speech:", err);
+
+          // Fallback: Try alternative interruption methods
+          try {
+            // Alternative approach: mute and unmute
+            vapi.setMuted(true);
+            interruptionTimeoutRef.current = setTimeout(() => {
+              vapi.setMuted(false);
+              setIsInterrupting(false);
+            }, 200);
+          } catch (fallbackErr) {
+            console.error("Fallback interruption failed:", fallbackErr);
+            setIsInterrupting(false);
+          }
+        }
+      };
+
+      // Execute interruption handling
+      handleInterruption();
     });
 
     vapi.on("speech-end", (data) => {
       logEvent("speech-end", data);
       // console.log("Speech has ended");
       setActiveUser(true);
+    });
+
+    // Track conversation updates to monitor question progress and phase changes
+    vapi.on("conversation-update", (data) => {
+      logEvent("conversation-update", data);
+      if (data.conversationUpdate?.role === "assistant") {
+        const content = data.conversationUpdate.content?.[0]?.text || "";
+
+        // Check if we're moving from briefing to questions phase
+        if (
+          interviewPhase === "briefing" &&
+          (content.toLowerCase().includes("let's begin") ||
+            content.toLowerCase().includes("first question") ||
+            content.toLowerCase().includes("let's start"))
+        ) {
+          setInterviewPhase("questions");
+        }
+
+        // Check if AI is asking a new question (simple heuristic)
+        if (
+          content.includes("?") &&
+          !content.toLowerCase().includes("clarification") &&
+          !content.toLowerCase().includes("ready") &&
+          !content.toLowerCase().includes("proceed")
+        ) {
+          setCurrentQuestionIndex((prev) => prev + 1);
+        }
+      }
     });
 
     vapi.on("call-end", (callData) => {
@@ -281,6 +391,7 @@ function StartInterview() {
       // console.log("callData.call.id:", callData?.call?.id);
 
       toast("Interview ended");
+      setInterviewPhase("ended"); // Set to ended phase
       setIsTimerActive(false); // Stop timer when call ends
       setTimerExpired(false); // Reset timer expired state
 
@@ -309,113 +420,69 @@ function StartInterview() {
     };
   }, [vapi, callId]); // Add callId to dependencies
 
-  // const GenerateFeedback = async (conversation, retryCount = 0) => {
-  //   const maxRetries = 3;
+  // Prompt the user when they try to close the tab/window while a call is active.
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      // If a call is in progress, show the confirmation dialog
+      if (callStarted) {
+        // Standard way to trigger browser confirmation
+        e.preventDefault();
+        e.returnValue = ""; // legacy method for Chrome
 
-  //   try {
-  // console.log("Generating feedback with conversation:", conversation);
+        // Attempt to stop the call gracefully
+        try {
+          vapi?.stop?.();
+        } catch (err) {
+          // ignore
+          toast.error("Failed to stop call");
+        }
 
-  //     if (!conversation) {
-  //       console.warn("No conversation data available for feedback");
-  //       setLoading(false);
-  //       return;
-  //     }
+        // Try to persist a transcript backup using sendBeacon (best-effort)
+        try {
+          const payload = JSON.stringify({
+            callId: callId,
+            interviewId: interview_id,
+            userEmail: user?.primaryEmailAddress?.emailAddress,
+          });
 
-  //     // Show loading toast for longer operations
-  //     const loadingToast = toast.loading("Generating feedback...", {
-  //       id: "feedback-loading",
-  //     });
+          if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: "application/json" });
+            navigator.sendBeacon("/api/save-transcript", blob);
+          } else {
+            // Fallback: synchronous XHR (may be blocked in some browsers)
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/api/save-transcript", false);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            try {
+              xhr.send(payload);
+            } catch (err) {
+              // ignore
+            }
+          }
+        } catch (err) {
+          // ignore sendBeacon errors
+        }
+      }
+      // if not callStarted, do nothing special (allow unload)
+    };
 
-  //     const result = await axios.post(
-  //       "/api/ai-feedback",
-  //       {
-  //         conversation: conversation,
-  //       },
-  //       {
-  //         timeout: 30000, // 30 second timeout
-  //       }
-  //     );
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    // pagehide/unload are additional lifecycle events where we can try a best-effort save
+    window.addEventListener("pagehide", handleBeforeUnload);
+    window.addEventListener("unload", handleBeforeUnload);
 
-  //     console.log("Feedback API response:", result?.data);
-
-  //     const Content = result.data.content;
-  //     const final_content = Content.replace("```json", "").replace("```", "");
-  //     console.log("Final feedback content:", final_content);
-
-  //     // Dismiss loading toast
-  //     toast.dismiss(loadingToast);
-
-  //     toast.success("Feedback generated successfully!", {
-  //       id: "feedback-success",
-  //     });
-  //     // Save to DB here
-  //     const { data, error } = await supabase
-  //       .from("interview-feedback")
-  //       .insert([
-  //         {
-  //           userName: user?.firstName,
-  //           userEmail: user.primaryEmailAddress?.emailAddress,
-  //           interview_Id: interview_id,
-  //           feedback: JSON.parse(final_content),
-  //           recommendation: false,
-  //         },
-  //       ])
-  //       .select();
-  //     console.log(data);
-  //     router.replace("/interview/" + interview_id + "/completed");
-  //   } catch (error) {
-  //     console.error("Error generating feedback:", error);
-
-  //     // Dismiss loading toast
-  //     toast.dismiss("feedback-loading");
-
-  //     // Handle specific error types
-  //     if (error.response?.status === 429) {
-  //       const retryAfter = error.response.data?.retryAfter || 60;
-
-  //       if (retryCount < maxRetries) {
-  //         toast.warning(
-  //           `Rate limit hit. Retrying in ${retryAfter} seconds...`,
-  //           {
-  //             id: "feedback-retry",
-  //           }
-  //         );
-
-  //         setTimeout(() => {
-  //           GenerateFeedback(conversation, retryCount + 1);
-  //         }, retryAfter * 1000);
-  //         return;
-  //       } else {
-  //         toast.error("Rate limit exceeded. Please try again later.", {
-  //           id: "feedback-error",
-  //         });
-  //       }
-  //     } else if (error.response?.status === 401) {
-  //       toast.error("Authentication error. Please check your API key.", {
-  //         id: "feedback-error",
-  //       });
-  //     } else if (error.code === "ECONNABORTED") {
-  //       toast.error("Request timed out. Please try again.", {
-  //         id: "feedback-error",
-  //       });
-  //     } else {
-  //       toast.error("Failed to generate feedback. Please try again.", {
-  //         id: "feedback-error",
-  //       });
-  //     }
-  //   } finally {
-  //     // Reset the flag after feedback generation is complete
-  //     feedbackGenerating.current = false;
-  //     setLoading(false);
-  //   }
-  // };
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handleBeforeUnload);
+      window.removeEventListener("unload", handleBeforeUnload);
+    };
+  }, [callStarted, callId, vapi, interview_id, user]);
 
   const GenerateFeedback = async (conversation, callId, retryCount = 0) => {
     const maxRetries = 3;
 
     try {
       // console.log("Generating feedback with conversation:", conversation);
-
       if (!conversation) {
         console.warn("No conversation data available for feedback");
         setLoading(false);
@@ -452,6 +519,7 @@ function StartInterview() {
         interview_id: interview_id,
         user_email: user.primaryEmailAddress?.emailAddress,
         call_id: callId, // Add callId to payload
+        companyDetails: interviewInfo?.interviewData?.companyDetails || "",
       };
 
       // console.log("Making API request to /api/ai-feedback");
@@ -490,20 +558,6 @@ function StartInterview() {
       toast.success("Feedback generated successfully!", {
         id: "feedback-success",
       });
-
-      // Save to DB here with callId and cleaned transcript
-      // console.log("=== DATABASE INSERT DEBUG ===");
-      // console.log("CallId being inserted:", callId);
-      // console.log("CallId type:", typeof callId);
-      // console.log("Full insert data:", {
-      //   userName: user?.firstName,
-      //   userEmail: user.primaryEmailAddress?.emailAddress,
-      //   interview_Id: interview_id,
-      //   feedback: feedbackData,
-      //   recommendation: false,
-      //   call_id: callId,
-      //   transcript: conversationData,
-      // });
 
       const { data, error } = await supabase
         .from("interview-feedback")
@@ -647,10 +701,24 @@ function StartInterview() {
     }
   };
   useEffect(() => {
-    interviewInfo && startCall();
-  }, [interviewInfo]);
+    console.log("useEffect triggered - interviewInfo:", interviewInfo);
+    console.log("useEffect triggered - vapi:", vapi);
+    if (interviewInfo && vapi) {
+      console.log("Starting call...");
+      startCall();
+    } else {
+      console.log("Not starting call - missing interviewInfo or vapi");
+    }
+  }, [interviewInfo, vapi]);
 
   const startCall = () => {
+    // Check if vapi is available
+    if (!vapi) {
+      console.error("Vapi instance not available");
+      toast.error("Vapi not initialized. Please check your API key.");
+      return;
+    }
+
     // Build the questions list with symbol replacements for better TTS pronunciation
     const questionsList = interviewInfo?.interviewData?.questionList
       ?.map((item, index) => {
@@ -662,17 +730,28 @@ function StartInterview() {
     // console.log("Questions to ask:", questionsList);
     // console.log(interviewInfo?.interviewData?.duration);
 
+    const companyInfoText = interviewInfo?.interviewData?.companyDetails
+      ? `\n\nCompany Details:\n${interviewInfo.interviewData.companyDetails}\n\n`
+      : "";
+
+    // Calculate total questions for dynamic termination handling
+    const totalQuestions =
+      interviewInfo?.interviewData?.questionList?.length || 0;
+
     const assistantOptions = {
-      name: "AI Recruiter",
+      name: "Eva",
       firstMessage:
         "Hi " +
         user?.firstName +
-        " how are you , Ready for your interview on " +
-        interviewInfo?.interviewData?.jobPosition,
+        ",<break time='800ms'/> I am Eva and I will be conducting the interview. Let me first briefly tell you about the company. " +
+        (interviewInfo?.interviewData?.companySummary ||
+          `Welcome to ${
+            interviewInfo?.interviewData?.companyDetails || "our company"
+          }. We're excited to learn more about your experience with ${
+            interviewInfo?.interviewData?.jobPosition || "this position"
+          }.`) +
+        "<break time='1.5s'/> Please let me know if you have any questions about the company, if you'd like to reschedule this interview, or if you're ready to proceed. I'm listening for your response.",
       transcriber: {
-        // provider: "deepgram",
-        // model: "nova-3",
-        // language: "en-US",
         provider: "deepgram",
         model: "nova-3",
         language: "en",
@@ -686,7 +765,10 @@ function StartInterview() {
               provider: "cartesia",
               voiceId: "248be419-c632-4f23-adf1-5324ed7dbf1d",
             },
-            { provider: "playht", voiceId: "jennifer" },
+            {
+              provider: "playht",
+              voiceId: "jennifer",
+            },
           ],
         },
       },
@@ -696,10 +778,24 @@ function StartInterview() {
         messages: [
           {
             role: "system",
-            content: `${interviewPrompt}
+            content: `${interviewPrompt(questionsList)}${companyInfoText}
 
-CRITICAL INSTRUCTIONS FOR THIS INTERVIEW:
+CRITICAL INTERVIEW FLOW:
+
+PHASE 1 - COMPANY BRIEFING & READINESS CHECK:
+After delivering the company briefing, you MUST:
+1. PAUSE and wait for the candidate's response
+2. Listen carefully for any of these responses:
+   - Questions about the company (answer briefly, then ask "Any other questions before we begin?")
+   - "I'm ready" / "Let's start" / "Proceed" / "Yes" → Move to Phase 2
+   - Rescheduling requests → Follow RESCHEDULING HANDLING below
+   - End interview requests → Follow TERMINATION HANDLING below
+3. Do NOT proceed to questions until you get clear confirmation they're ready
+
+PHASE 2 - INTERVIEW QUESTIONS:
 You must ask ONLY these specific questions in the exact order listed below. Do not deviate from these questions or ask any follow-up questions unless the candidate asks for clarification.
+
+TOTAL QUESTIONS: ${totalQuestions}
 
 QUESTIONS TO ASK IN ORDER:
 ${questionsList}
@@ -708,10 +804,36 @@ IMPORTANT RULES:
 - Ask questions one by one in the exact order listed above
 - Wait for the candidate's complete answer before moving to the next question
 - Do not ask any other questions beyond this list
-- After the candidate answers the last question, thank them and end the interview by using the endCall tool
+- After the candidate answers the last question, say a short closing sentence (e.g. "Thank you — that concludes the interview.") and then WAIT for 2 seconds to allow the final audio to finish playing before invoking the endCall tool.
 - If a candidate's answer is unclear, you may ask them to clarify or elaborate on their response
 - Keep the interview focused and professional
-- IMPORTANT: Even if the allocated time has expired, continue with the interview until all questions are completed. Do not end the interview early due to time constraints.`,
+- IMPORTANT: Even if the allocated time has expired, continue with the interview until all questions are completed. Do not end the interview early due to time constraints.
+
+TERMINATION HANDLING:
+If the candidate expresses a clear desire to end the interview early (phrases like "I want to end the interview", "bye", "goodbye", "I'm done", "let's stop here", "I need to go", "can we end this", "I'd like to stop", "I want to stop", "end this", "finish now", "that's enough", "I'm finished", "wrap this up", "conclude now"), follow these steps:
+1. Acknowledge their request: "I understand you'd like to end the interview early."
+2. Ask for confirmation: "Are you sure you'd like to conclude the interview now? We still have [X] questions remaining." (Replace [X] with the actual number of remaining questions)
+3. If they confirm: "Thank you for your time today. We'll end the interview here." Then WAIT 2 seconds and invoke the endCall tool.
+4. If they want to continue: "No problem, let's continue with the next question."
+
+RESCHEDULING HANDLING:
+If the candidate wants to reschedule (phrases like "I need to reschedule", "can we reschedule", "I want to reschedule", "schedule later", "different time", "not now", "later please", "can we do this another time", "I need to postpone"):
+1. Acknowledge: "I understand you'd like to reschedule this interview."
+2. Confirm: "Would you like me to end this call so you can contact us to arrange a new time?"
+3. If yes: "No problem. I'll end the call now. Please contact us to reschedule at your convenience. Have a great day!" Then WAIT 2 seconds and invoke the endCall tool.
+4. If no: "No problem, let's continue with the interview then."
+
+INTERRUPTION HANDLING:
+- ALWAYS listen for interruptions during ANY phase
+- If candidate interrupts during company brief with questions or concerns:
+  - IMMEDIATELY stop speaking and listen
+  - Address their question/concern directly
+  - If they want to reschedule: Follow the rescheduling handling process above
+  - If they have clarification questions: Answer them briefly, then ask "Any other questions before we begin the interview?"
+  - If they want to end: Follow the termination handling process above
+  - If they're ready: "Great! Let's begin the interview with our first question."
+
+Keep track of which question you're currently on to provide accurate remaining question count.`,
           },
         ],
         tools: [{ type: "endCall" }],
@@ -720,29 +842,31 @@ IMPORTANT RULES:
       stopSpeakingPlan: {
         numWords: 1,
         voiceSeconds: 0.1,
-        backoffSeconds: 0,
+        // Give a short backoff to ensure final words are played before tools like endCall execute
+        backoffSeconds: 2,
       },
     };
-
     try {
+      console.log("Starting Vapi call with options:", assistantOptions);
       vapi.start(assistantOptions);
+      console.log("Vapi start called successfully");
       toast.success("Call started with AI Recruiter");
     } catch (err) {
       console.error("Failed to start call:", err);
-      toast.error("Failed to start call");
-      setVapiError("Failed to start call");
+      console.error("Error details:", err.message, err.stack);
+      toast.error("Failed to start call: " + err.message);
+      setVapiError("Failed to start call: " + err.message);
     }
   };
-
   const stopInterview = () => {
     try {
       console.log("Stopping interview manually");
       vapi.stop();
       setCallStarted(false);
+      setInterviewPhase("ended"); // Set to ended phase
       setIsTimerActive(false); // Stop timer when interview is stopped
       setTimerExpired(false); // Reset timer expired state
       toast.success("Interview ended successfully");
-
       // Don't generate feedback here - let the call-end event handle it
       // The call-end event will fire automatically when vapi.stop() is called
     } catch (err) {
@@ -756,7 +880,6 @@ IMPORTANT RULES:
       toast.error("Please start the interview first");
       return;
     }
-
     try {
       if (isMicMuted) {
         vapi.setMuted(false);
@@ -792,16 +915,24 @@ IMPORTANT RULES:
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
         <div className="bg-white h-[400px] rounded-4xl border flex items-center justify-center">
           <div className="relative">
-            {!activeUser && (
+            {!activeUser && !isInterrupting && (
               <span className="absolute inset-0 rounded-full bg-blue-400 opacity-75 animate-ping"></span>
+            )}
+            {isInterrupting && (
+              <span className="absolute inset-0 rounded-full bg-yellow-400 opacity-75 animate-pulse"></span>
             )}
             <Image
               src={"/evaSvg.svg"}
               height={100}
               width={100}
-              className=" rounded-full object-cover"
+              className={`rounded-full object-cover transition-all duration-200 ${
+                isInterrupting ? "scale-95" : "scale-100"
+              }`}
               alt=""
             />
+            {isInterrupting && (
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-500 rounded-full animate-bounce"></div>
+            )}
           </div>
         </div>
 
@@ -860,18 +991,52 @@ IMPORTANT RULES:
           ? "Generating feedback..."
           : callStarted
           ? isMicMuted
-            ? `Interview in progress (Microphone muted)${
-                timerExpired
-                  ? " - Time expired, completing remaining questions"
-                  : ""
+            ? `${
+                interviewPhase === "briefing"
+                  ? "Company briefing (Microphone muted) - Eva is listening for your response"
+                  : interviewPhase === "questions"
+                  ? `Interview in progress (Microphone muted)${
+                      timerExpired
+                        ? " - Time expired, completing remaining questions"
+                        : ""
+                    }`
+                  : "Interview ended (Microphone muted)"
               }`
-            : `Interview in progress${
-                timerExpired
-                  ? " - Time expired, completing remaining questions"
-                  : ""
-              } ...`
+            : isInterrupting
+            ? `${
+                interviewPhase === "briefing"
+                  ? "Company briefing - Eva is stopping to listen to you"
+                  : interviewPhase === "questions"
+                  ? `Interview in progress - Eva is stopping to listen to you${
+                      timerExpired
+                        ? " - Time expired, completing remaining questions"
+                        : ""
+                    }`
+                  : "Interview ended - Eva is stopping to listen to you"
+              }`
+            : `${
+                interviewPhase === "briefing"
+                  ? "Company briefing - Eva is listening for your response"
+                  : interviewPhase === "questions"
+                  ? `Interview in progress${
+                      timerExpired
+                        ? " - Time expired, completing remaining questions"
+                        : ""
+                    }`
+                  : "Interview ended"
+              }`
           : "Interview ready to start"}
       </h2>
+
+      {callStarted && (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-700 text-center">
+            💡 <strong>Tip:</strong>
+            • Request to reschedule ("I need to reschedule", "different time")
+            <br />• End the interview ("bye", "I'm done", "stop")
+          </p>
+        </div>
+      )}
     </div>
   );
 }

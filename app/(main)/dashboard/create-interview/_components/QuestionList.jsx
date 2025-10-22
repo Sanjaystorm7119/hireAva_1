@@ -238,6 +238,25 @@ function QuestionList({ formData, onCreateInterviewLink }) {
     const newInterviewId = uuidv4();
 
     try {
+      // Generate company summary
+      let companySummary = "";
+      try {
+        const summaryResponse = await axios.post("/api/company-summary", {
+          jobPosition: formData?.jobPosition,
+          jobDescription: formData?.jobDescription,
+          companyDetails: formData?.companyDetails,
+        });
+        companySummary = summaryResponse.data.summary;
+      } catch (summaryError) {
+        console.error("Error generating company summary:", summaryError);
+        // Use fallback summary if API fails
+        companySummary = `Welcome to ${
+          formData?.companyDetails || "our company"
+        }. We're excited to learn more about your experience with ${
+          formData?.jobPosition || "this position"
+        }. Let's begin the interview.`;
+      }
+
       // Add the final question to the list before saving
       const questionsToSave = [...questionList, FINAL_QUESTION];
 
@@ -247,6 +266,8 @@ function QuestionList({ formData, onCreateInterviewLink }) {
           {
             ...formData,
             questionList: questionsToSave,
+            companyDetails: formData?.companyDetails || "",
+            companySummary: companySummary,
             userEmail: user?.primaryEmailAddress?.emailAddress,
             interviewId: newInterviewId,
           },

@@ -34,7 +34,9 @@ function Interview() {
     try {
       let { data: interviews, error } = await supabase
         .from("interviews")
-        .select("jobPosition,jobDescription,duration")
+        .select(
+          "jobPosition,jobDescription,duration,companyDetails,companySummary"
+        )
         .eq("interviewId", interview_id);
       setInterviewData(interviews[0]);
       setLoading(false);

@@ -4,7 +4,8 @@ import OpenAI from "openai";
 
 export async function POST(req) {
   try {
-    const { jobPosition, jobDescription, duration, type } = await req.json();
+    const { jobPosition, jobDescription, duration, type, companyDetails } =
+      await req.json();
 
     // Validate required fields
     if (!jobPosition || !jobDescription || !duration || !type) {
@@ -17,7 +18,8 @@ export async function POST(req) {
     const FINAL_PROMPT = QUESTIONS_PROMPT.replace("{{jobTitle}}", jobPosition)
       .replace("{{jobDescription}}", jobDescription)
       .replace("{{duration}}", duration)
-      .replace("{{type}}", type);
+      .replace("{{type}}", type)
+      .replace("{{companyDetails}}", companyDetails || "");
 
     // console.log(FINAL_PROMPT);
 

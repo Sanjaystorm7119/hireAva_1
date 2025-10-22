@@ -17,6 +17,7 @@ function FormContainer({ onHandleInputChange, GoToNext }) {
   const [interviewType, setInterviewType] = useState([]);
   const [jobPosition, setJobPosition] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [companyDetails, setCompanyDetails] = useState("");
   const [duration, setDuration] = useState(""); // Add duration state
 
   // Stable debounce function using useCallback
@@ -49,6 +50,16 @@ function FormContainer({ onHandleInputChange, GoToNext }) {
     [onHandleInputChange, createDebounce]
   );
 
+  const debouncedCompanyDetailsChange = useMemo(
+    () =>
+      createDebounce((value) => {
+        if (onHandleInputChange) {
+          onHandleInputChange("companyDetails", value);
+        }
+      }, 400),
+    [onHandleInputChange, createDebounce]
+  );
+
   // Handle interview type changes with proper condition check
   useEffect(() => {
     if (interviewType.length > 0 && onHandleInputChange) {
@@ -73,6 +84,15 @@ function FormContainer({ onHandleInputChange, GoToNext }) {
       debouncedJobDescriptionChange(value);
     },
     [debouncedJobDescriptionChange]
+  );
+
+  const handleCompanyDetailsChange = useCallback(
+    (event) => {
+      const value = event.target.value;
+      setCompanyDetails(value);
+      debouncedCompanyDetailsChange(value);
+    },
+    [debouncedCompanyDetailsChange]
   );
 
   // Fixed duration handler with local state
@@ -121,9 +141,19 @@ function FormContainer({ onHandleInputChange, GoToNext }) {
     <div>
       <div className="mx-2">
         <div>
-          <h2 className="text-sm font-medium ">Job Position</h2>
+          <h2 className="text-sm font-medium ">Company Details</h2>
           <Input
-            placeholder="e.g. Frontend Developer"
+            placeholder="HireEva - Your interviewing Partner"
+            required
+            className="mt-2"
+            value={companyDetails}
+            onChange={handleCompanyDetailsChange}
+          />
+        </div>
+        <div>
+          <h2 className="text-sm font-medium mt-2">Job Position</h2>
+          <Input
+            placeholder="Frontend Developer"
             required
             className="mt-2"
             value={jobPosition}

@@ -85,9 +85,9 @@ function InterviewLink({ interviewId, formData }) {
       <div className="w-full p-7 mt-6 rounded-xl bg-blue-300">
         <div className="flex justify-between items-center gap-2">
           <h2 className="font-bold">Interview Link</h2>
-          <h2 className="p-1 px-2 text-blue-800 bg-blue-200 rounded">
+          {/* <h2 className="p-1 px-2 text-blue-800 bg-blue-200 rounded">
             Valid for 30 Days
-          </h2>
+          </h2> */}
         </div>
 
         <div className="mt-5 flex justify-center items-center gap-2">

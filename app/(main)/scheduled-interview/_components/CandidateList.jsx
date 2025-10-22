@@ -32,7 +32,9 @@ function CandidateList({ CandidateDetails }) {
           <div className="space-y-3">
             {CandidateDetails.map((candidate, index) => (
               <div
-                key={index}
+                key={`candidate-${candidate.userEmail || index}-${
+                  candidate.created_at || index
+                }`}
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center gap-3">

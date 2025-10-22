@@ -3,11 +3,16 @@ import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
-  const { conversation, interview_id, user_email, call_id } = await req.json();
-  const FINAL_PROMPT = FEEDBACK.replace(
-    "{{conversation}}",
-    JSON.stringify(conversation)
-  );
+  const { conversation, interview_id, user_email, call_id, companyDetails } =
+    await req.json();
+  // Prepend company details to the conversation prompt if available
+  const companyPrefix = companyDetails
+    ? `Company Details:\n${companyDetails}\n\n`
+    : "";
+
+  const FINAL_PROMPT =
+    companyPrefix +
+    FEEDBACK.replace("{{conversation}}", JSON.stringify(conversation));
 
   const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",

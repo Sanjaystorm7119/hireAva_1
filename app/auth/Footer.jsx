@@ -1,4 +1,13 @@
+"use client";
 import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "../../components/ui/dialog";
 
 // Social Media Icons
 const FacebookIcon = ({ className = "" }) => (
@@ -87,21 +96,22 @@ const MapPinIcon = ({ className = "" }) => (
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [isAboutOpen, setIsAboutOpen] = React.useState(false);
 
   const footerLinks = {
     company: [
       { name: "About Us", href: "#" },
-      { name: "Careers", href: "#" },
-      { name: "Press", href: "#" },
-      { name: "Blog", href: "#" },
-      { name: "Contact", href: "#" },
+      // { name: "Careers", href: "#" },
+      // { name: "Press", href: "#" },
+      // { name: "Blog", href: "#" },
+      // { name: "Contact", href: "#" },
     ],
     products: [
-      { name: "Features", href: "#" },
-      { name: "Pricing", href: "#" },
-      { name: "API", href: "#" },
-      { name: "Documentation", href: "#" },
-      { name: "Integrations", href: "#" },
+      // { name: "Features", href: "#" },
+      // { name: "Pricing", href: "#" },
+      // { name: "API", href: "#" },
+      // { name: "Documentation", href: "#" },
+      // { name: "Integrations", href: "#" },
     ],
     resources: [
       { name: "Help Center", href: "#" },
@@ -111,11 +121,11 @@ const Footer = () => {
       { name: "Status", href: "#" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      // { name: "Cookie Policy", href: "#" },
-      { name: "GDPR", href: "#" },
-      { name: "Disclaimer", href: "#" },
+      // { name: "Privacy Policy", href: "#" },
+      // { name: "Terms of Service", href: "#" },
+      // // { name: "Cookie Policy", href: "#" },
+      // { name: "GDPR", href: "#" },
+      // { name: "Disclaimer", href: "#" },
     ],
   };
 
@@ -145,7 +155,7 @@ const Footer = () => {
               <h3 className="text-xl font-bold">Eva</h3>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Interview 1000s in minutes.
+              Interviewing made Simple, Quick and Easy.
             </p>
 
             {/* Contact Info */}
@@ -171,19 +181,22 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (link.name === "About Us") setIsAboutOpen(true);
+                    }}
+                    className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
                   >
                     {link.name}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Product Links */}
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-4">Products</h4>
             <ul className="space-y-2">
               {footerLinks.products.map((link) => (
@@ -197,7 +210,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
           {/* 
           Resources Links
           <div>
@@ -217,7 +230,7 @@ const Footer = () => {
           </div> */}
 
           {/* Legal Links */}
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
@@ -231,7 +244,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
 
         {/* Newsletter Signup */}
@@ -285,8 +298,135 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <AboutUsDialog open={isAboutOpen} onOpenChange={setIsAboutOpen} />
     </footer>
   );
 };
 
 export default Footer;
+
+// About Us Dialog
+const AboutUsDialog = ({ open, onOpenChange }) => {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden bg-gray-900 text-white border-gray-800">
+        {/* Hero */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-600/10 to-fuchsia-600/10" />
+          <div className="px-6 py-10 sm:px-10 sm:py-12">
+            <DialogHeader className="text-left">
+              <DialogTitle className="text-2xl sm:text-3xl font-extrabold">
+                About HireEva
+              </DialogTitle>
+              <DialogDescription className="text-gray-300 text-base">
+                Interviewing made Quick and Easy - AI that scales your hiring
+                without sacrificing quality.
+                <br />
+                <br />
+                Eva helps teams hire faster and fairer by combining structured
+                interviews, adaptive AI, and deeply human feedback loops. From
+                sourcing to final decision, Eva turns hours into minutes while
+                keeping candidates at the center.
+                <br />
+                <br />
+                <br />
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+        </div>
+
+        {/* Mission */}
+        <section className="px-6 sm:px-10 pb-8">
+          <h3 className="text-xl font-semibold mb-3">Our mission</h3>
+          <p className="text-gray-300 leading-relaxed">
+            We help teams hire faster and fairer by combining structured
+            interviews, adaptive AI, and deeply human feedback loops. From
+            sourcing to final decision, Eva turns hours into minutes while
+            keeping candidates at the center.
+          </p>
+        </section>
+
+        {/* Stats */}
+        {/* <section className="px-6 sm:px-10 pb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Stat title="Faster hiring" value="7x" />
+            <Stat title="Candidate CSAT" value="95%" />
+            <Stat title="Bias reduction" value="-40%" />
+            <Stat title="Interviews run" value=">250k" />
+          </div>
+        </section> */}
+
+        {/* Values */}
+        <section className="px-6 sm:px-10 pb-8">
+          <h3 className="text-xl font-semibold mb-4">What we value</h3>
+          <ul className="grid sm:grid-cols-2 gap-4">
+            <ValueCard
+              title="Fairness by design"
+              desc="Structured, consistent, and explainable evaluations for every candidate."
+            />
+            <ValueCard
+              title="Speed with signal"
+              desc="Automations that save time while preserving the insights that matter."
+            />
+            <ValueCard
+              title="Human in the loop"
+              desc="Experts guide, calibrate, and approve - AI augments, never replaces humans."
+            />
+          </ul>
+        </section>
+
+        {/* Timeline */}
+
+        {/* <section className="px-6 sm:px-10 pb-8">
+          <h3 className="text-xl font-semibold mb-4">How we got here</h3>
+          <ol className="relative border-l border-gray-800 pl-4 space-y-4">
+            <TimelineItem
+              year="2022"
+              text="Founded to solve the slow, noisy interview pipeline."
+            />
+            <TimelineItem
+              year="2023"
+              text="Launched Eva Interviews with adaptive questioning and instant scoring."
+            />
+            <TimelineItem
+              year="2024"
+              text="Added transcripts, structured rubrics, and team calibration at scale."
+            />
+            <TimelineItem
+              year="2025"
+              text="Built company-wide insights and coaching, closing the loop from hire to ramp."
+            />
+          </ol>
+        </section> */}
+
+        <div className="px-6 sm:px-10 pb-6 flex justify-end">
+          <DialogClose className="text-gray-300 hover:text-white">
+            Close
+          </DialogClose>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const Stat = ({ title, value }) => (
+  <div className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+    <div className="text-2xl font-extrabold">{value}</div>
+    <div className="text-gray-400 text-sm">{title}</div>
+  </div>
+);
+
+const ValueCard = ({ title, desc }) => (
+  <li className="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+    <div className="font-semibold mb-1">{title}</div>
+    <p className="text-gray-300 text-sm leading-relaxed">{desc}</p>
+  </li>
+);
+
+const TimelineItem = ({ year, text }) => (
+  <li className="ml-2">
+    <div className="absolute -left-1.5 mt-1 h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600" />
+    <div className="text-sm text-gray-400">{year}</div>
+    <div className="text-gray-200">{text}</div>
+  </li>
+);
