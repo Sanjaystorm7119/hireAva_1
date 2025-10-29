@@ -748,7 +748,10 @@ function StartInterview() {
             interviewInfo?.interviewData?.jobPosition || "this position"
           }.`) +
         "<break time='1.5s'/> Please let me know if you have any questions about the company, if you'd like to reschedule this interview, or if you're ready to proceed. I'm listening for your response.",
-      maxDurationSeconds: 3600,
+      maxDurationSeconds: 3600 + 300,
+      endCallMessage:
+        "Thank you for interviewing with us Today, have a great day, bye!",
+
       transcriber: {
         provider: "deepgram",
         model: "nova-3",
@@ -759,14 +762,34 @@ function StartInterview() {
         voiceId: "Spencer",
         fallbackPlan: {
           voices: [
+            // {
+            //   provider: "cartesia",
+            //   voiceId: "248be419-c632-4f23-adf1-5324ed7dbf1d",
+            // },
+            // {
+            //   provider: "cartesia",
+            //   voiceId: "248be419-c632-4f23-adf1-5324ed7dbf1d",
+            // },
+            {
+              provider: "vapi",
+              voiceId: "Spencer",
+            },
+            {
+              provider: "vapi",
+              voiceId: "Spencer",
+            },
+            {
+              provider: "vapi",
+              voiceId: "Spencer",
+            },
             {
               provider: "cartesia",
               voiceId: "248be419-c632-4f23-adf1-5324ed7dbf1d",
             },
-            {
-              provider: "playht",
-              voiceId: "jennifer",
-            },
+            // {
+            //   provider: "playht",
+            //   voiceId: "jennifer",
+            // },
           ],
         },
       },
@@ -811,7 +834,7 @@ TERMINATION HANDLING:
 If the candidate expresses a clear desire to end the interview early (phrases like "I want to end the interview", "bye", "goodbye", "I'm done", "let's stop here", "I need to go", "can we end this", "I'd like to stop", "I want to stop", "end this", "finish now", "that's enough", "I'm finished", "wrap this up", "conclude now"), follow these steps:
 1. Acknowledge their request: "I understand you'd like to end the interview early."
 2. Ask for confirmation: "Are you sure you'd like to conclude the interview now? We still have [X] questions remaining." (Replace [X] with the actual number of remaining questions)
-3. If they confirm: "Thank you for your time today. We'll end the interview here." Then WAIT 2 seconds and invoke the endCall tool.
+3. If they confirm: say : "Thank you for your time today. We'll end the interview here." Then WAIT 2 seconds and invoke the endCall tool.
 4. If they want to continue: "No problem, let's continue with the next question."
 
 RESCHEDULING HANDLING:
