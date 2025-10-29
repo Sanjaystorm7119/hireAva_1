@@ -302,9 +302,6 @@ function StartInterview() {
       // Enhanced interruption handling with better error recovery and timing
       const handleInterruption = () => {
         try {
-          // Stop any ongoing AI speech immediately
-          vapi.stopSpeaking();
-
           // Update interruption count for adaptive timing
           setInterruptionCount((prev) => prev + 1);
 
@@ -751,6 +748,7 @@ function StartInterview() {
             interviewInfo?.interviewData?.jobPosition || "this position"
           }.`) +
         "<break time='1.5s'/> Please let me know if you have any questions about the company, if you'd like to reschedule this interview, or if you're ready to proceed. I'm listening for your response.",
+      maxDurationSeconds: 3600,
       transcriber: {
         provider: "deepgram",
         model: "nova-3",
@@ -844,7 +842,6 @@ Keep track of which question you're currently on to provide accurate remaining q
         voiceSeconds: 0.1,
         // Give a short backoff to ensure final words are played before tools like endCall execute
         backoffSeconds: 2,
-        maxDurationSeconds: 1800,
       },
     };
     try {
