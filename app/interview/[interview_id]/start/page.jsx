@@ -844,6 +844,7 @@ Keep track of which question you're currently on to provide accurate remaining q
         voiceSeconds: 0.1,
         // Give a short backoff to ensure final words are played before tools like endCall execute
         backoffSeconds: 2,
+        maxDurationSeconds: 1800,
       },
     };
     try {
