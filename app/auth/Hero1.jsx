@@ -1,11 +1,12 @@
-// "use client";
+// This file has been temporarily commented out and is not in use
+/*
+// This file has been temporarily commented out and is not in use.
+// If needed in the future, restore from version control.
 
-// import { useState, useEffect, useRef, useCallback } from "react";
-// import "./Hero1.css";
+"use client";
 
-// // Debounce hook
-// function useDebouncedCallback(callback, delay) {
-//   const timeoutRef = useRef();
+export default function Hero1() {
+    return null; // Component temporarily disabled
 
 //   const debouncedFn = useCallback(
 //     (...args) => {
@@ -589,8 +590,9 @@
 //               </div>
 //             </div>
 //           );
-//         })}
+//         )}
 //       </div>
 //     </div>
 //   );
 // }
+*/

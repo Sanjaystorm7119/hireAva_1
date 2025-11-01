@@ -27,7 +27,7 @@ export default function NotFound() {
           Oops! Page Not Found
         </h1>
         <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-          It looks like this page has gone on an interview break. Don't worry,
+          It looks like this page has gone on an inter             break. Don't worry,
           we'll help you find what you're looking for!
         </p>
 

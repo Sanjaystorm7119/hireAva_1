@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import InterviewCard from "../dashboard/_components/InterviewCard";
 import Link from "next/link";
 import { Loader, Plus, Video, AlertCircle, RefreshCw } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+// import { Button } from "../../../components/ui/button";
 import { motion } from "framer-motion";
 
 function ScheduledInterview() {
@@ -34,6 +34,7 @@ function ScheduledInterview() {
           jobDescription,
           duration,
           interviewId,
+          created_at, 
           interview_feedback:interview-feedback(userEmail, transcript, call_id)
         `
         )
@@ -349,7 +350,7 @@ function ScheduledInterview() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14 bg"
         >
           {interviewList.map((interview, index) => (
             <motion.div

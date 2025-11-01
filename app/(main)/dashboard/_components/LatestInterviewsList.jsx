@@ -19,7 +19,9 @@ function LatestInterviewsList() {
   const getInterviewList = async () => {
     let { data: interviews, error } = await supabase
       .from("interviews")
-      .select("*")
+      .select(
+        `*,interview_feedback:interview-feedback(userEmail, transcript, call_id)`
+      )
       .eq("userEmail", user.emailAddresses[0]?.emailAddress)
       .order("id", { ascending: false })
       .limit(6);

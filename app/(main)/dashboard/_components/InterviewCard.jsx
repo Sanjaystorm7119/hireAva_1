@@ -38,7 +38,7 @@ function InterviewCard({ interview, viewDetail = false }) {
             translateZ="50"
             className="text-lg font-bold text-neutral-600 dark:text-white"
           >
-            <h2>{moment(interview?.created_at).format("MMM Do YY")}</h2>
+            <h2>{moment(interview?.created_at).format("MMM DD, YYYY")}</h2>
           </CardItem>
           <CardItem
             as="p"
@@ -102,8 +102,8 @@ function InterviewCard({ interview, viewDetail = false }) {
                 "/scheduled-interview/" + interview?.interviewId + "/details"
               }
             >
-              <Button className='mt-5 w-full variant="outline"'>
-                View Details
+              <Button className='absolute mt-5 w-full variant="outline"'>
+                View
               </Button>
             </Link>
           )}

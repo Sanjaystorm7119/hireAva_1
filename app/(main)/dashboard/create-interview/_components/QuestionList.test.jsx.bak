@@ -1,0 +1,97 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import QuestionList from "./QuestionList";
+import axios from 'axios';
+import { act } from "react-dom/test-utils";
+
+jest.mock("@clerk/nextjs", () => ({
+  useUser: () => ({
+    user: {
+      primaryEmailAddress: { emailAddress: "test@example.com" },
+      Credits: "10",
+    },
+  }),
+}));
+
+jest.mock("../../../../../lib/supabase", () => ({
+  supabase: {
+    from: () => ({
+      insert: () => ({
+        select: () => ({ data: [], error: null }),
+      }),
+      update: () => ({
+        eq: () => ({ data: [], error: null }),
+      }),
+    }),
+  },
+}));
+
+jest.mock("axios");
+
+describe("QuestionList Component", () => {
+  const mockFormData = {
+    jobPosition: "Software Engineer",
+    jobDescription: "Test job description",
+    companyDetails: "Test company",
+  };
+
+  const mockQuestions = [
+    {
+      id: "1",
+      question: "What is your experience with React?",
+      type: "technical",
+    },
+    {
+      id: "2",
+      question: "Describe a challenging project you worked on.",
+      type: "behavioral",
+    },
+  ];
+
+  beforeEach(() => {
+    // Reset all mocks before each test
+    jest.clearAllMocks();
+  });
+
+  it("allows adding a new question", async () => {
+    const user = userEvent.setup();
+    const onCreateInterviewLink = jest.fn();
+
+    render(
+      <QuestionList
+        formData={mockFormData}
+        onCreateInterviewLink={onCreateInterviewLink}
+      />
+    );
+
+    // Fill in new question form
+    const input = screen.getByPlaceholderText("Enter your question...");
+    const addButton = screen.getByRole("button", { name: /Add Question/i });
+
+    await user.type(input, "New test question");
+    await user.click(addButton);
+
+    // Verify that the new question is added
+    expect(screen.getByText("Question added successfully")).toBeInTheDocument();
+  });
+
+  it("shows the fixed final question", () => {
+    render(<QuestionList formData={mockFormData} />);
+
+    expect(
+      screen.getByText("Before we wrap up, do you have any questions for me?")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Type: Closing")).toBeInTheDocument();
+  });
+
+  it("renders loading state when generating questions", () => {
+    render(<QuestionList formData={mockFormData} />);
+
+    expect(screen.getByText("Preparing your interview")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Eva is crafting personalised questions based on given jobDescription and position"
+      )
+    ).toBeInTheDocument();
+  });
+});
